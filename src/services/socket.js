@@ -48,20 +48,34 @@ export function connect(token, onConnect) {
   
   // Add SockJS event listeners for debugging
   socket.onopen = function() {
-    console.log("SockJS connection opened");
+    console.log("✅ SockJS connection opened successfully");
   };
   
   socket.onclose = function(event) {
-    console.log("SockJS connection closed:", event);
+    console.log("❌ SockJS connection closed:", event);
+    console.log("Close event details:", {
+      code: event.code,
+      reason: event.reason,
+      wasClean: event.wasClean
+    });
   };
   
   socket.onerror = function(error) {
-    console.error("SockJS connection error:", error);
+    console.error("❌ SockJS connection error:", error);
+    console.error("Error details:", {
+      type: error.type,
+      target: error.target,
+      currentTarget: error.currentTarget
+    });
   };
   
   socket.onmessage = function(event) {
-    console.log("SockJS message received:", event.data);
+    console.log("📨 SockJS message received:", event.data);
   };
+  
+  // Check if socket is ready
+  console.log("Socket ready state:", socket.readyState);
+  console.log("Socket URL:", socket.url);
 
   stompClient = new Client({
     webSocketFactory: () => socket,
@@ -115,6 +129,15 @@ export function connect(token, onConnect) {
   console.log("Activating STOMP client...");
   stompClient.activate();
   console.log("STOMP client activation called");
+  
+  // Add a timeout to check connection status
+  setTimeout(() => {
+    console.log("Connection status after 2 seconds:", {
+      active: stompClient.active,
+      connected: stompClient.connected,
+      state: stompClient.state
+    });
+  }, 2000);
 }
 
 /** Internal subscription helper */
