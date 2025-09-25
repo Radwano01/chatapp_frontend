@@ -12,6 +12,15 @@ export function getStompClient() {
 
 /** Connect socket with JWT token in query param */
 export function connect(token, onConnect) {
+  console.log("=== CONNECT FUNCTION CALLED ===");
+  console.log("Token provided:", !!token);
+  console.log("Token value:", token);
+  console.log("Current stompClient state:", {
+    exists: !!stompClient,
+    active: stompClient?.active,
+    connected: stompClient?.connected
+  });
+
   if (stompClient && stompClient.active) {
     console.warn("STOMP client already active");
     return;
@@ -19,19 +28,40 @@ export function connect(token, onConnect) {
 
   // Disconnect existing client if any
   if (stompClient) {
+    console.log("Disconnecting existing client");
     stompClient.deactivate();
     stompClient = null;
   }
 
   const wsUrl = `${process.env.REACT_APP_API_URL}${process.env.REACT_APP_WS_PATH}?token=${token}`;
   console.log("WebSocket URL:", wsUrl);
+  console.log("JWT Token:", token);
+  console.log("Token length:", token?.length);
   console.log("Environment variables:", {
     REACT_APP_API_URL: process.env.REACT_APP_API_URL,
     REACT_APP_WS_PATH: process.env.REACT_APP_WS_PATH
   });
+  
   const socket = new SockJS(wsUrl, null, {
     withCredentials: false
   });
+  
+  // Add SockJS event listeners for debugging
+  socket.onopen = function() {
+    console.log("SockJS connection opened");
+  };
+  
+  socket.onclose = function(event) {
+    console.log("SockJS connection closed:", event);
+  };
+  
+  socket.onerror = function(error) {
+    console.error("SockJS connection error:", error);
+  };
+  
+  socket.onmessage = function(event) {
+    console.log("SockJS message received:", event.data);
+  };
 
   stompClient = new Client({
     webSocketFactory: () => socket,
@@ -82,7 +112,9 @@ export function connect(token, onConnect) {
     console.warn("WebSocket closed:", event);
   };
 
+  console.log("Activating STOMP client...");
   stompClient.activate();
+  console.log("STOMP client activation called");
 }
 
 /** Internal subscription helper */
