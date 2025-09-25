@@ -23,10 +23,8 @@ export default function Navbar({ currentUser }) {
         );
       }
     } catch (error) {
-      console.error("Logout failed:", error);
     } finally {
       // Disconnect socket before logout
-      console.log("Logout: Disconnecting socket");
       disconnectSocket();
       sessionStorage.removeItem("currentUser");
       navigate("/login");

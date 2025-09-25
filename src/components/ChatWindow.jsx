@@ -87,7 +87,6 @@ export default function ChatWindow({ currentUser, selectedChat }) {
           await audio.play();
           setIsPlaying(true);
         } catch (e) {
-          console.error("Failed to play audio", e);
         }
       }
     };
@@ -150,7 +149,6 @@ export default function ChatWindow({ currentUser, selectedChat }) {
         setMessages(formatted);
         scrollToBottom();
       } catch (err) {
-        console.error("Failed to fetch messages", err);
       }
     };
 
@@ -160,11 +158,9 @@ export default function ChatWindow({ currentUser, selectedChat }) {
   useEffect(() => {
     if (!chatId || !currentUser?.token) return;
 
-    console.log("ChatWindow: Connecting to chat", chatId);
     
     // Connect to the chat room
     connectToChat(chatId, currentUser.token, () => {
-      console.log("Connected to chat room:", chatId);
     });
 
     const isGroup = (selectedChat?.members?.length || 0) > 2;
@@ -213,7 +209,6 @@ export default function ChatWindow({ currentUser, selectedChat }) {
     }
 
     return () => {
-      console.log("ChatWindow: Disconnecting from chat", chatId);
       if (messageSub && typeof messageSub.unsubscribe === "function") messageSub.unsubscribe();
       if (typingSub) typingSub.unsubscribe();
       disconnectFromChat();
@@ -238,7 +233,6 @@ export default function ChatWindow({ currentUser, selectedChat }) {
           }),
         });
       } catch (error) {
-        console.warn("Failed to publish typing status:", error);
       }
     }
 
@@ -257,7 +251,6 @@ export default function ChatWindow({ currentUser, selectedChat }) {
             }),
           });
         } catch (error) {
-          console.warn("Failed to publish typing stop:", error);
         }
       }
     }, 2000);
@@ -288,7 +281,6 @@ export default function ChatWindow({ currentUser, selectedChat }) {
       } catch (err) {
         const status = err?.response?.status;
         const message = err?.response?.data || err?.message || "Upload failed";
-        console.error("Upload failed", status, message);
         alert(`Upload failed${status ? ` (${status})` : ""}`);
         setIsUploading(false);
         return;
@@ -319,7 +311,6 @@ export default function ChatWindow({ currentUser, selectedChat }) {
       setMediaFile(null); // Clear audio after sending
       setUploadProgress(0);
     } catch (err) {
-      console.error("Failed to send message", err);
     }
 
     const client = getStompClient();
@@ -336,7 +327,6 @@ export default function ChatWindow({ currentUser, selectedChat }) {
           }),
         });
       } catch (error) {
-        console.warn("Failed to publish typing stop after send:", error);
       }
     }
   };
@@ -365,7 +355,6 @@ export default function ChatWindow({ currentUser, selectedChat }) {
       mediaRecorderRef.current = mediaRecorder;
       setIsRecording(true);
     } catch (err) {
-      console.error("Failed to start recording", err);
       alert("Microphone permission is required");
     }
   };

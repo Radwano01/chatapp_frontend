@@ -28,17 +28,7 @@ const isProduction = window.location.hostname.includes('netlify.app') ||
 
 // Auto-detect ngrok URL if in production and no explicit config
 if (isProduction && !process.env.REACT_APP_API_URL) {
-  console.warn('⚠️ Running in production but no REACT_APP_API_URL set. Please configure your backend URL.');
-  console.log('Current location:', window.location.href);
+  // Production environment without explicit API URL configuration
 }
-
-// Log configuration for debugging
-console.log('Environment Configuration:', {
-  API_URL: ENV_CONFIG.API_URL,
-  API_PATH: ENV_CONFIG.API_PATH,
-  WS_PATH: ENV_CONFIG.WS_PATH,
-  FULL_API_URL: ENV_CONFIG.FULL_API_URL,
-  FULL_WS_URL: ENV_CONFIG.FULL_WS_URL
-});
 
 export default ENV_CONFIG;

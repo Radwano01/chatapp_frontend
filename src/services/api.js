@@ -13,10 +13,7 @@ api.interceptors.request.use(config => {
     config.headers['ngrok-skip-browser-warning'] = 'true';
     // Enable credentials to match backend CORS configuration
     config.withCredentials = true;
-    console.log("API Request:", config.method?.toUpperCase(), config.baseURL + config.url);
-    console.log("Headers:", config.headers);
   } catch (error) {
-    console.warn("Failed to parse currentUser from sessionStorage:", error);
   }
   return config;
 });

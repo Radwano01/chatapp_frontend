@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 export default function FriendsPage() {
-    console.log("FriendsPage component rendered!");
-    alert("FriendsPage component loaded!");
     
     const [friends, setFriends] = useState([]);
     const [pending, setPending] = useState([]);
@@ -14,15 +12,12 @@ export default function FriendsPage() {
     const [detailUser, setDetailUser] = useState(null);
     const navigate = useNavigate();
     
-    console.log("FriendsPage state:", { friends, pending, search, searchResult });
 
     const currentUser = useMemo(() => {
         try {
             const user = JSON.parse(sessionStorage.getItem("currentUser"));
-            console.log("Current user loaded:", user);
             return user;
         } catch (error) {
-            console.error("Error parsing currentUser:", error);
             return null;
         }
     }, []);
@@ -52,7 +47,6 @@ export default function FriendsPage() {
                 setPending(mapped.filter(f => f.relationStatus === "PENDING"));
                 setFriends(mapped.filter(f => f.relationStatus === "ACCEPTED"));
             } catch (err) {
-                console.error("Failed to fetch friends:", err);
             }
         };
         fetchFriends();
@@ -61,15 +55,11 @@ export default function FriendsPage() {
 
     // Search user
     const handleFindFriend = async () => {
-        console.log("handleFindFriend called!");
         const query = search.trim();
-        console.log("Search query:", query);
         if (!query) {
-            console.log("No query provided, returning");
             return;
         }
         if (query === lastSearch && searchResult) {
-            console.log("Same query as last search, returning");
             return;
         }
 
