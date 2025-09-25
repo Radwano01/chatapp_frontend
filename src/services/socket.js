@@ -17,7 +17,7 @@ export function connect(token, onConnect) {
     return;
   }
 
-  const socket = new SockJS(`${process.env.REACT_APP_API_URL}${process.env.REACT_APP_WS_PATH}?token=${token}`);
+  const socket = new SockJS(`${process.env.REACT_APP_WS_URL}?token=${token}`);
 
   stompClient = new Client({
     webSocketFactory: () => socket,
