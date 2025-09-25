@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import ChatWindow from "../components/ChatWindow";
 import api from "../services/api";
-import { ensureConnected } from "../services/socket";
+import { disconnectSocket } from "../services/socket";
 
 export default function ChatPage() {
   const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
@@ -41,14 +41,13 @@ export default function ChatPage() {
     }
   }, [chatId, chatRooms]);
 
-  // Ensure socket connection on page load/refresh
+  // Disconnect socket when component unmounts (user leaves page)
   useEffect(() => {
-    if (currentUser?.token) {
-      ensureConnected(currentUser.token, () => {
-        console.log("Socket reconnected successfully");
-      });
-    }
-  }, [currentUser?.token]);
+    return () => {
+      console.log("ChatPage: Disconnecting socket on page leave");
+      disconnectSocket();
+    };
+  }, []);
 
   // Fetch chatrooms from backend
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { getStompClient, sendChatMessage, sendGroupMessage, subscribeToChat } from "../services/socket";
+import { getStompClient, sendChatMessage, sendGroupMessage, subscribeToChat, connectToChat, disconnectFromChat } from "../services/socket";
 import { uploadToBackend, MESSAGE_TYPES } from "../services/upload";
 import api from "../services/api";
 
@@ -158,52 +158,39 @@ export default function ChatWindow({ currentUser, selectedChat }) {
   }, [chatId]);
 
   useEffect(() => {
-    if (!chatId) return;
+    if (!chatId || !currentUser?.token) return;
+
+    console.log("ChatWindow: Connecting to chat", chatId);
+    
+    // Connect to the chat room
+    connectToChat(chatId, currentUser.token, () => {
+      console.log("Connected to chat room:", chatId);
+    });
 
     const isGroup = (selectedChat?.members?.length || 0) > 2;
     
-    // Add a small delay to ensure STOMP connection is ready
-    const subscribeWithDelay = () => {
-      const messageSub = subscribeToChat(chatId, (incoming) => {
-        if (incoming.deleted && incoming.messageId) {
-          setMessages(prev =>
-            prev.map(m =>
-              m.id === incoming.messageId
-                ? { ...m, deleted: true, content: "This message was deleted" }
-                : m
-            )
-          );
-        } else {
-          setMessages(prev => [
-            ...prev,
-            {
-              ...incoming,
-              senderName: incoming.senderName || incoming.senderUsername || "Unknown",
-              senderAvatar: incoming.senderAvatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
-            },
-          ]);
-          scrollToBottom();
-        }
-      }, isGroup);
-      
-      return messageSub;
-    };
-
-    // Try to subscribe immediately, if it fails, retry after a short delay
-    let messageSub = subscribeWithDelay();
-    if (!messageSub) {
-      console.log("STOMP not ready, retrying subscription in 500ms");
-      const retryTimeout = setTimeout(() => {
-        messageSub = subscribeWithDelay();
-      }, 500);
-      
-      return () => {
-        clearTimeout(retryTimeout);
-        if (messageSub && typeof messageSub.unsubscribe === "function") {
-          messageSub.unsubscribe();
-        }
-      };
-    }
+    // Subscribe to messages
+    const messageSub = subscribeToChat(chatId, (incoming) => {
+      if (incoming.deleted && incoming.messageId) {
+        setMessages(prev =>
+          prev.map(m =>
+            m.id === incoming.messageId
+              ? { ...m, deleted: true, content: "This message was deleted" }
+              : m
+          )
+        );
+      } else {
+        setMessages(prev => [
+          ...prev,
+          {
+            ...incoming,
+            senderName: incoming.senderName || incoming.senderUsername || "Unknown",
+            senderAvatar: incoming.senderAvatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+          },
+        ]);
+        scrollToBottom();
+      }
+    }, isGroup);
 
     const client = getStompClient();
     let typingSub;
@@ -226,10 +213,12 @@ export default function ChatWindow({ currentUser, selectedChat }) {
     }
 
     return () => {
+      console.log("ChatWindow: Disconnecting from chat", chatId);
       if (messageSub && typeof messageSub.unsubscribe === "function") messageSub.unsubscribe();
       if (typingSub) typingSub.unsubscribe();
+      disconnectFromChat();
     };
-  }, [chatId, currentUser.id, selectedChat?.members?.length]);
+  }, [chatId, currentUser.id, currentUser.token, selectedChat?.members?.length]);
 
   const handleInputChange = (e) => {
     const value = e.target.value;

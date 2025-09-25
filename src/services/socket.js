@@ -4,6 +4,7 @@ import SockJS from "sockjs-client";
 let stompClient = null;
 const pendingSubscriptions = [];
 const pendingMessages = [];
+let currentChatId = null; // Track current active chat
 
 /** Return current STOMP client */
 export function getStompClient() {
@@ -19,6 +20,13 @@ export function connect(token, onConnect) {
     active: stompClient?.active,
     connected: stompClient?.connected,
   });
+
+  // If already connected, just call onConnect
+  if (stompClient && stompClient.connected) {
+    console.log("STOMP client already connected");
+    if (onConnect) onConnect();
+    return;
+  }
 
   // Deactivate any existing client
   if (stompClient) {
@@ -159,6 +167,20 @@ export function ensureConnected(token, onConnect) {
   }
 }
 
+/** Connect to chat room - only connect when entering a chat */
+export function connectToChat(chatId, token, onConnect) {
+  console.log("Connecting to chat:", chatId);
+  currentChatId = chatId;
+  connect(token, onConnect);
+}
+
+/** Disconnect from current chat room */
+export function disconnectFromChat() {
+  console.log("Disconnecting from chat:", currentChatId);
+  currentChatId = null;
+  disconnectSocket();
+}
+
 /** Disconnect WebSocket cleanly */
 export function disconnectSocket() {
   if (stompClient) {
@@ -166,6 +188,12 @@ export function disconnectSocket() {
     stompClient = null;
     pendingSubscriptions.length = 0;
     pendingMessages.length = 0;
+    currentChatId = null;
     console.log("STOMP client disconnected");
   }
+}
+
+/** Get current chat ID */
+export function getCurrentChatId() {
+  return currentChatId;
 }

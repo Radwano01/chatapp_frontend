@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../services/api";
+import { disconnectSocket } from "../services/socket";
 
 export default function Navbar({ currentUser }) {
   const [showProfile, setShowProfile] = useState(false);
@@ -24,6 +25,9 @@ export default function Navbar({ currentUser }) {
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
+      // Disconnect socket before logout
+      console.log("Logout: Disconnecting socket");
+      disconnectSocket();
       sessionStorage.removeItem("currentUser");
       navigate("/login");
     }
