@@ -39,9 +39,11 @@ export function connect(token, onConnect) {
   });
 
   stompClient.onConnect = (frame) => {
+    console.log("STOMP client connected successfully");
 
     // Process any queued subscriptions
     pendingSubscriptions.forEach(({ chatId, callback, isGroup }) => {
+      console.log("Processing queued subscription for chatId:", chatId);
       _subscribe(chatId, callback, isGroup);
     });
     pendingSubscriptions.length = 0;
@@ -68,23 +70,32 @@ export function connect(token, onConnect) {
 
 /** Internal subscription helper */
 function _subscribe(chatId, callback, isGroup) {
-  if (!stompClient || !stompClient.active) return;
+  if (!stompClient || !stompClient.active || !stompClient.connected) {
+    console.warn("STOMP client not ready for subscription");
+    return;
+  }
 
   const destination = isGroup
     ? `/topic/chatroom/${chatId}`
     : `/user/queue/chatroom/${chatId}`;
 
-  return stompClient.subscribe(destination, (message) => {
-    callback(JSON.parse(message.body));
-  });
+  try {
+    return stompClient.subscribe(destination, (message) => {
+      callback(JSON.parse(message.body));
+    });
+  } catch (error) {
+    console.error("Failed to subscribe to chat:", error);
+    return null;
+  }
 }
 
 /** Subscribe to a chat room */
 export function subscribeToChat(chatId, callback, isGroup = false) {
-  if (!stompClient || !stompClient.active) {
+  if (!stompClient || !stompClient.active || !stompClient.connected) {
     // Queue subscription until connected
+    console.log("STOMP not ready, queueing subscription for chatId:", chatId);
     pendingSubscriptions.push({ chatId, callback, isGroup });
-    return;
+    return null;
   }
   return _subscribe(chatId, callback, isGroup);
 }
