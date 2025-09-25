@@ -30,8 +30,11 @@ export default function ChatPage() {
 
   // Handle chatId from URL parameter
   useEffect(() => {
+    console.log("ChatPage - chatId from URL:", chatId);
+    console.log("ChatPage - chatRooms:", chatRooms);
     if (chatId && chatRooms.length > 0) {
       const chat = chatRooms.find(room => room.chatId === chatId);
+      console.log("ChatPage - found chat:", chat);
       if (chat) {
         setSelectedChat(chat);
       }
@@ -57,14 +60,18 @@ export default function ChatPage() {
         });
 
         // Map backend response to local shape
-        const rooms = (Array.isArray(res.data) ? res.data : []).map((room) => ({
-          id: room.id,
-          chatId: room.chatId,
-          otherUserId: room.otherUserId,
-          fullName: room.fullName,
-          avatar: room.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
-        }));
-
+        console.log("ChatPage - Backend response:", res.data);
+        const rooms = (Array.isArray(res.data) ? res.data : []).map((room) => {
+          console.log("ChatPage - Mapping room:", room);
+          return {
+            id: room.id,
+            chatId: room.chatId,
+            otherUserId: room.otherUserId,
+            fullName: room.fullName,
+            avatar: room.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+          };
+        });
+        console.log("ChatPage - Mapped rooms:", rooms);
         setChatRooms(rooms);
       } catch (err) {
         console.error("Failed to fetch chat rooms:", err);

@@ -115,6 +115,9 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
 
   // When user clicks a chat in the list
   const handleClickChat = (chat) => {
+    console.log("Sidebar handleClickChat - chat object:", chat);
+    console.log("Sidebar handleClickChat - chat.chatId:", chat.chatId);
+    
     const selected = {
       id: chat.id,
       chatId: chat.chatId,
@@ -129,8 +132,10 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
       senderId: chat.senderId,
       __raw: chat.__raw,
     };
+    console.log("Sidebar handleClickChat - selected object:", selected);
     onSelectChat(selected);
     // Navigate to the chat URL
+    console.log("Sidebar handleClickChat - navigating to:", `/chat/${chat.chatId}`);
     navigate(`/chat/${chat.chatId}`);
   };
 
