@@ -39,35 +39,47 @@ export function connect(token, onConnect) {
   });
 
   stompClient.onConnect = (frame) => {
-    console.log("STOMP client connected successfully");
+    console.log("STOMP client connected successfully", frame);
+    console.log("STOMP client state:", {
+      active: stompClient.active,
+      connected: stompClient.connected,
+      state: stompClient.state
+    });
 
-    // Add a small delay to ensure the connection is fully established
-    setTimeout(() => {
-      console.log("Processing queued subscriptions and messages");
-      
-      // Process any queued subscriptions
-      pendingSubscriptions.forEach(({ chatId, callback, isGroup }) => {
-        console.log("Processing queued subscription for chatId:", chatId);
-        _subscribe(chatId, callback, isGroup);
-      });
-      pendingSubscriptions.length = 0;
+    // Process any queued subscriptions immediately
+    console.log("Processing queued subscriptions and messages");
+    
+    // Process any queued subscriptions
+    pendingSubscriptions.forEach(({ chatId, callback, isGroup }) => {
+      console.log("Processing queued subscription for chatId:", chatId);
+      _subscribe(chatId, callback, isGroup);
+    });
+    pendingSubscriptions.length = 0;
 
-      // Flush any queued messages
-      while (pendingMessages.length > 0) {
-        const { destination, body } = pendingMessages.shift();
-        try {
-          stompClient.publish({ destination, body });
-        } catch (e) {
-          console.warn("Failed to publish queued message", e);
-        }
+    // Flush any queued messages
+    while (pendingMessages.length > 0) {
+      const { destination, body } = pendingMessages.shift();
+      try {
+        stompClient.publish({ destination, body });
+      } catch (e) {
+        console.warn("Failed to publish queued message", e);
       }
+    }
 
-      if (onConnect) onConnect();
-    }, 100); // Small delay to ensure connection is fully ready
+    if (onConnect) onConnect();
   };
 
   stompClient.onStompError = (frame) => {
-    console.error("Broker error:", frame.headers["message"], frame.body);
+    console.error("STOMP broker error:", frame.headers["message"], frame.body);
+    console.error("STOMP error details:", frame);
+  };
+
+  stompClient.onWebSocketError = (error) => {
+    console.error("WebSocket error:", error);
+  };
+
+  stompClient.onWebSocketClose = (event) => {
+    console.warn("WebSocket closed:", event);
   };
 
   stompClient.activate();
@@ -75,7 +87,20 @@ export function connect(token, onConnect) {
 
 /** Internal subscription helper */
 function _subscribe(chatId, callback, isGroup) {
-  if (!stompClient || !stompClient.active) {
+  console.log("_subscribe called with chatId:", chatId, "isGroup:", isGroup);
+  console.log("STOMP client state:", {
+    exists: !!stompClient,
+    active: stompClient?.active,
+    connected: stompClient?.connected,
+    state: stompClient?.state
+  });
+
+  if (!stompClient) {
+    console.warn("STOMP client not initialized");
+    return;
+  }
+
+  if (!stompClient.active) {
     console.warn("STOMP client not active for subscription");
     return;
   }
@@ -94,9 +119,12 @@ function _subscribe(chatId, callback, isGroup) {
 
   try {
     console.log("Subscribing to:", destination);
-    return stompClient.subscribe(destination, (message) => {
+    const subscription = stompClient.subscribe(destination, (message) => {
+      console.log("Received message on", destination, ":", message.body);
       callback(JSON.parse(message.body));
     });
+    console.log("Subscription successful:", subscription);
+    return subscription;
   } catch (error) {
     console.error("Failed to subscribe to chat:", error);
     // Re-queue the subscription for retry
@@ -161,9 +189,18 @@ export function sendGroupMessage(message) {
 
 /** Check if socket is connected and reconnect if needed */
 export function ensureConnected(token, onConnect) {
-  if (!stompClient || !stompClient.active) {
+  console.log("ensureConnected called, current state:", {
+    exists: !!stompClient,
+    active: stompClient?.active,
+    connected: stompClient?.connected,
+    state: stompClient?.state
+  });
+
+  if (!stompClient || !stompClient.active || !stompClient.connected) {
     console.log("Socket not connected, reconnecting...");
     connect(token, onConnect);
+  } else {
+    console.log("Socket already connected");
   }
 }
 
