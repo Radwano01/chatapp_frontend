@@ -54,6 +54,10 @@ export default function FriendsPage() {
         if (query === lastSearch && searchResult) return;
 
         try {
+            console.log("Searching for user:", query);
+            console.log("API URL:", `/users/${query}`);
+            console.log("Current user token:", currentUser?.token ? "Present" : "Missing");
+            
             const res = await api.get(`/users/${query}`, {
                 headers: { Authorization: `Bearer ${currentUser?.token}` },
             });
@@ -80,6 +84,8 @@ export default function FriendsPage() {
             setLastSearch(query);
         } catch (err) {
             console.error("Friend not found", err);
+            console.error("Error details:", err.response?.data);
+            console.error("Error status:", err.response?.status);
             setSearchResult(null);
             setLastSearch("");
         }

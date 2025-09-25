@@ -8,6 +8,8 @@ api.interceptors.request.use(config => {
   try {
     const user = JSON.parse(sessionStorage.getItem("currentUser") || "{}");
     if (user?.token) config.headers.Authorization = `Bearer ${user.token}`;
+    console.log("API Request:", config.method?.toUpperCase(), config.baseURL + config.url);
+    console.log("Headers:", config.headers);
   } catch (error) {
     console.warn("Failed to parse currentUser from sessionStorage:", error);
   }
