@@ -17,7 +17,13 @@ export function connect(token, onConnect) {
     return;
   }
 
-  const socket = new SockJS(`${process.env.REACT_APP_API_URL}/${process.env.REACT_APP_WS_URL}?token=${token}`);
+  const wsUrl = `${process.env.REACT_APP_API_URL}${process.env.REACT_APP_WS_PATH}?token=${token}`;
+  console.log("WebSocket URL:", wsUrl);
+  console.log("Environment variables:", {
+    REACT_APP_API_URL: process.env.REACT_APP_API_URL,
+    REACT_APP_WS_PATH: process.env.REACT_APP_WS_PATH
+  });
+  const socket = new SockJS(wsUrl);
 
   stompClient = new Client({
     webSocketFactory: () => socket,
