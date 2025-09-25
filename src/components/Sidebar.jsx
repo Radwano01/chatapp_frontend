@@ -142,13 +142,21 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
 
       const userDetails = res.data;
 
+      // Normalize user details to ensure all required fields are present
+      const normalizedDetails = {
+        ...userDetails,
+        fullName: userDetails.fullName || userDetails.username || "Unknown User",
+        description: userDetails.description || "No description",
+        avatar: userDetails.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
+      };
+
       setSelectedUser({
         ...chat,                     // keep chat-specific fields
-        ...userDetails,               // merge fullName, description, status, relationShipStatus
+        ...normalizedDetails,         // merge normalized fullName, description, status, relationShipStatus
         otherUserId: chat.otherUserId, // ensure otherUserId is kept
-        relationStatus: userDetails.relationStatus || "NONE", // normalize field
+        relationStatus: normalizedDetails.relationStatus || "NONE", // normalize field
         // Determine if the CURRENT user is the sender of the friend request
-        isSender: Boolean(userDetails?.senderId) && userDetails.senderId === currentUser?.id,
+        isSender: Boolean(normalizedDetails?.senderId) && normalizedDetails.senderId === currentUser?.id,
       });
     } catch (err) {
       console.error("Failed to fetch user details:", err);

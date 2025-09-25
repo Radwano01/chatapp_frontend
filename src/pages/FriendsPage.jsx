@@ -89,12 +89,21 @@ export default function FriendsPage() {
                 searchResult ||
                 { id: userId };
 
+            // Normalize the details data to ensure all required fields are present
+            const normalizedDetails = {
+                ...details,
+                fullName: details.fullName || details.username || "No Name",
+                description: details.description || "No description",
+                avatar: details.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
+            };
+
             // Merge details with base user (keep relationStatus, senderId, etc.)
             setDetailUser({
                 ...baseUser,
-                fullName: details.fullName || baseUser.fullName || baseUser.username || "No Name",
-                description: details.description ?? baseUser.description ?? "No description",
-                userStatus: details.status || baseUser.userStatus || "OFFLINE",
+                ...normalizedDetails,
+                fullName: normalizedDetails.fullName || baseUser.fullName || baseUser.username || "No Name",
+                description: normalizedDetails.description || baseUser.description || "No description",
+                userStatus: normalizedDetails.status || baseUser.userStatus || "OFFLINE",
             });
         } catch (err) {
             console.error("Failed to fetch user details:", err);
