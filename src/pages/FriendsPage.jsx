@@ -81,7 +81,10 @@ export default function FriendsPage() {
             console.log("Current user token:", currentUser?.token ? "Present" : "Missing");
             
             const res = await api.get(`/users/${query}`, {
-                headers: { Authorization: `Bearer ${currentUser?.token}` },
+                headers: { 
+                    Authorization: `Bearer ${currentUser?.token}`,
+                    'ngrok-skip-browser-warning': 'true'
+                },
             });
             const data = res?.data;
             console.log("Search API response:", data);
