@@ -1,13 +1,8 @@
 import axios from "axios";
-
-console.log("Environment variables:", {
-  REACT_APP_API_URL: process.env.REACT_APP_API_URL,
-  REACT_APP_API_PATH: process.env.REACT_APP_API_PATH,
-  REACT_APP_WS_PATH: process.env.REACT_APP_WS_PATH
-});
+import { ENV_CONFIG } from "../config/environment";
 
 const api = axios.create({
-  baseURL: `${process.env.REACT_APP_API_URL}${process.env.REACT_APP_API_PATH}`,
+  baseURL: ENV_CONFIG.FULL_API_URL,
 });
 
 api.interceptors.request.use(config => {

@@ -1,5 +1,6 @@
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { ENV_CONFIG } from "../config/environment";
 
 let stompClient = null;
 const pendingSubscriptions = [];
@@ -35,7 +36,7 @@ export function connect(token, onConnect) {
     stompClient = null;
   }
 
-  const wsUrl = `${process.env.REACT_APP_API_URL}${process.env.REACT_APP_WS_PATH}?token=${token}`;
+  const wsUrl = `${ENV_CONFIG.FULL_WS_URL}?token=${token}`;
   console.log("WebSocket URL:", wsUrl);
 
   const socket = new SockJS(wsUrl, null, { withCredentials: false });
@@ -80,10 +81,26 @@ export function connect(token, onConnect) {
 
   stompClient.onWebSocketError = (error) => {
     console.error("WebSocket error:", error);
+    // Attempt to reconnect after a delay
+    setTimeout(() => {
+      if (!stompClient?.connected) {
+        console.log("Attempting to reconnect after WebSocket error...");
+        connect(token, onConnect);
+      }
+    }, 5000);
   };
 
   stompClient.onWebSocketClose = (event) => {
     console.warn("WebSocket closed:", event);
+    // Attempt to reconnect if not a clean close
+    if (!event.wasClean) {
+      setTimeout(() => {
+        if (!stompClient?.connected) {
+          console.log("Attempting to reconnect after unexpected close...");
+          connect(token, onConnect);
+        }
+      }, 3000);
+    }
   };
 
   console.log("Activating STOMP client...");
@@ -136,8 +153,13 @@ export function sendChatMessage(message) {
   const body = JSON.stringify(message);
 
   if (stompClient?.connected) {
-    stompClient.publish({ destination, body });
-    return;
+    try {
+      stompClient.publish({ destination, body });
+      console.log("Message sent successfully to:", destination);
+      return;
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
   }
 
   console.warn("STOMP not connected, queuing message");
@@ -150,11 +172,21 @@ export function sendGroupMessage(message) {
   const body = JSON.stringify(message);
 
   if (stompClient?.connected) {
-    stompClient.publish({ destination, body });
+    try {
+      stompClient.publish({ destination, body });
+      console.log("Group message sent successfully to:", destination);
+    } catch (error) {
+      console.error("Failed to send group message:", error);
+    }
   } else {
     console.warn("STOMP not connected, queuing group message");
     pendingMessages.push({ destination, body });
   }
+}
+
+/** Check if WebSocket is connected */
+export function isConnected() {
+  return stompClient?.connected || false;
 }
 
 /** Ensure connected, reconnect if needed */
@@ -164,6 +196,7 @@ export function ensureConnected(token, onConnect) {
     connect(token, onConnect);
   } else {
     console.log("Socket already connected");
+    if (onConnect) onConnect();
   }
 }
 
