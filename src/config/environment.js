@@ -21,6 +21,17 @@ export const ENV_CONFIG = {
   }
 };
 
+// Detect if running in production (Netlify)
+const isProduction = window.location.hostname.includes('netlify.app') || 
+                     window.location.hostname.includes('vercel.app') ||
+                     process.env.NODE_ENV === 'production';
+
+// Auto-detect ngrok URL if in production and no explicit config
+if (isProduction && !process.env.REACT_APP_API_URL) {
+  console.warn('⚠️ Running in production but no REACT_APP_API_URL set. Please configure your backend URL.');
+  console.log('Current location:', window.location.href);
+}
+
 // Log configuration for debugging
 console.log('Environment Configuration:', {
   API_URL: ENV_CONFIG.API_URL,

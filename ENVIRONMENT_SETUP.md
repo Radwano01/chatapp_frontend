@@ -66,11 +66,45 @@ After setting up the environment variables:
 
 ## Troubleshooting
 
+### CORS Errors (Cross-Origin Resource Sharing)
+If you see errors like:
+```
+Access to XMLHttpRequest at 'https://your-backend.ngrok-free.dev/ws/info' has been blocked by CORS policy
+```
+
+**Solution:** Your backend needs to allow CORS for your frontend domain. Add these headers to your backend CORS configuration:
+
+```java
+// For Spring Boot backend - CORRECT configuration
+@CrossOrigin(origins = {
+    "https://radwan-chatapp.netlify.app",
+    "http://localhost:3000"
+}, allowCredentials = "true")
+```
+
+Or for more general CORS configuration (matching your current setup):
+```java
+@Configuration
+public class WebMvcConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOriginPatterns("https://radwan-chatapp.netlify.app", "https://*.ngrok-free.dev")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowCredentials(true);
+    }
+}
+```
+
 ### Still seeing connection errors?
 1. Verify your backend server is running
 2. Check that the WebSocket endpoint is accessible
 3. Ensure CORS is properly configured on your backend
 4. Check browser network tab for failed requests
+5. For ngrok: Make sure to use the `--host-header=rewrite` flag
 
 ### Backend not running?
 Make sure your backend server is running on the configured URL and port before starting the React app.
+
+### Production Deployment
+For production deployments (Netlify, Vercel, etc.), make sure to set the environment variables in your deployment platform's settings.

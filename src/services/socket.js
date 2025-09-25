@@ -39,7 +39,17 @@ export function connect(token, onConnect) {
   const wsUrl = `${ENV_CONFIG.FULL_WS_URL}?token=${token}`;
   console.log("WebSocket URL:", wsUrl);
 
-  const socket = new SockJS(wsUrl, null, { withCredentials: false });
+  // Configure SockJS with CORS-friendly settings
+  const socketOptions = {
+    withCredentials: true, // Match backend allowCredentials(true)
+    transports: ['websocket', 'xhr-polling', 'xhr-streaming'],
+    // Add headers to help with CORS
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
+  };
+
+  const socket = new SockJS(wsUrl, null, socketOptions);
 
   // SockJS debug
   socket.onopen = () => console.log("✅ SockJS connection opened");
