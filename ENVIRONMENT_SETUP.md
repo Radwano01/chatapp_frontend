@@ -75,11 +75,15 @@ Access to XMLHttpRequest at 'https://your-backend.ngrok-free.dev/ws/info' has be
 **Solution:** Your backend needs to allow CORS for your frontend domain. Add these headers to your backend CORS configuration:
 
 ```java
-// For Spring Boot backend - CORRECT configuration
-@CrossOrigin(origins = {
-    "https://radwan-chatapp.netlify.app",
-    "http://localhost:3000"
-}, allowCredentials = "true")
+// For Spring Boot backend - WebSocket configuration
+@Override
+public void registerStompEndpoints(StompEndpointRegistry registry) {
+    registry.addEndpoint("/ws")
+            .addInterceptors(jwtHandshakeInterceptor)
+            .setHandshakeHandler(new UserHandshakeHandler())
+            .setAllowedOriginPatterns(domain, "https://*.ngrok-free.dev")
+            .withSockJS();
+}
 ```
 
 Or for more general CORS configuration (matching your current setup):

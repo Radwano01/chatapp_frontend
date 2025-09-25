@@ -41,7 +41,7 @@ export function connect(token, onConnect) {
 
   // Configure SockJS with CORS-friendly settings
   const socketOptions = {
-    withCredentials: true, // Match backend allowCredentials(true)
+    withCredentials: false, // Match backend default (no allowCredentials set)
     transports: ['websocket', 'xhr-polling', 'xhr-streaming'],
     // Add headers to help with CORS
     headers: {

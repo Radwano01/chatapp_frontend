@@ -11,8 +11,9 @@ api.interceptors.request.use(config => {
     if (user?.token) config.headers.Authorization = `Bearer ${user.token}`;
     // Add ngrok skip warning header to bypass ngrok warning page
     config.headers['ngrok-skip-browser-warning'] = 'true';
-    // Enable credentials to match backend CORS configuration
-    config.withCredentials = true;
+    // Enable credentials only if backend allows it
+    // Note: WebSocket config doesn't set allowCredentials, so using false
+    config.withCredentials = false;
     console.log("API Request:", config.method?.toUpperCase(), config.baseURL + config.url);
     console.log("Headers:", config.headers);
   } catch (error) {
