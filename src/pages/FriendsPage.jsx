@@ -221,23 +221,30 @@ export default function FriendsPage() {
     const handleStartChat = async (friend) => {
         if (!friend || !friend.id) return;
         try {
-            await api.post(`/chatrooms/users/${friend.id}`, null, {
+            const res = await api.post(`/chatrooms/users/${friend.id}`, null, {
                 headers: { Authorization: `Bearer ${currentUser?.token}` },
             });
-            navigate("/", {
-                state: {
-                    selectedChat: {
-                        id: null,
-                        chatId: [currentUser.id, friend.id].sort().join("_"),
-                        type: "DIRECT",
-                        members: [currentUser.id, friend.id],
-                        name: friend.username,
-                        avatar: friend.avatar 
-                          ? (friend.avatar.startsWith('http') ? friend.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${friend.avatar}`)
-                          : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
-                        uniqueKey: `DIRECT_${[currentUser.id, friend.id].sort().join("_")}`,
-                    },
-                },
+            const chatroom = res.data;
+            console.log("FriendsPage - Backend response:", res.data);
+            console.log("FriendsPage - chatroom.chatId:", chatroom.chatId);
+            
+            const selectedChat = {
+                id: chatroom.id,
+                chatId: chatroom.chatId,
+                otherUserId: friend.id,
+                fullName: friend.fullName || friend.username,
+                avatar: friend.avatar 
+                  ? (friend.avatar.startsWith('http') ? friend.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${friend.avatar}`)
+                  : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+                description: friend.description,
+                status: friend.status,
+                relationStatus: friend.relationStatus,
+                senderId: friend.senderId,
+                uniqueKey: `DIRECT_${chatroom.chatId}`,
+            };
+            
+            navigate(`/chat/${chatroom.chatId}`, {
+                state: { selectedChat }
             });
         } catch (err) {
             console.error("Failed to create chatroom:", err);

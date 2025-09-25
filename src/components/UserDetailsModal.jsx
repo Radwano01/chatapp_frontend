@@ -74,6 +74,8 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
         headers: { Authorization: `Bearer ${currentUser?.token}` },
       });
       const chatroom = res.data;
+      console.log("UserDetailsModal - Backend response:", res.data);
+      console.log("UserDetailsModal - chatroom.chatId:", chatroom.chatId);
 
       if (typeof onSelectChat === "function") {
         onSelectChat({

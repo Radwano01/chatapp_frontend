@@ -94,12 +94,30 @@ export default function ChatPage() {
       <div className="flex-1 flex flex-col">
         <Navbar currentUser={currentUser} />
         <div className="flex-1 bg-gray-100 overflow-y-auto">
-          {selectedChat && (
+          {selectedChat ? (
             <ChatWindow
               key={selectedChat.chatId}
               currentUser={currentUser}
               selectedChat={selectedChat}
             />
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-600 mb-4">Welcome to Chat App</h2>
+                <p className="text-gray-500">Select a chat from the sidebar to start messaging</p>
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                  <p className="text-sm text-blue-600">
+                    Debug Info: chatId from URL: {chatId || 'undefined'}
+                  </p>
+                  <p className="text-sm text-blue-600">
+                    Chat Rooms: {chatRooms.length}
+                  </p>
+                  <p className="text-sm text-blue-600">
+                    Selected Chat: {selectedChat ? 'Yes' : 'No'}
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
