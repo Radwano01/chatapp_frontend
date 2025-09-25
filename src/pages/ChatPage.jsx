@@ -36,7 +36,7 @@ export default function ChatPage() {
         });
 
         // Map backend response to local shape
-        const rooms = res.data.map((room) => ({
+        const rooms = (res.data || []).map((room) => ({
           id: room.id,
           chatId: room.chatId,
           otherUserId: room.otherUserId,

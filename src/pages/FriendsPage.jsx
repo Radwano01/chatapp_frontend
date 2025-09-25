@@ -270,7 +270,7 @@ export default function FriendsPage() {
             </div>
 
             <ul className="space-y-2">
-                {allFriendsToShow.length > 0 ? allFriendsToShow.map(friend => (
+                {allFriendsToShow.length > 0 ? (allFriendsToShow || []).map(friend => (
                     <li key={friend.id} className={`flex items-center justify-between p-3 rounded shadow-sm ${searchResult?.id === friend.id ? "bg-yellow-100 border border-yellow-400" : "bg-gray-50"}`}>
                         <div className="flex items-center space-x-3">
                             <img 

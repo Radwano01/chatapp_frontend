@@ -31,7 +31,7 @@ export default function Groups() {
       <div className="flex-1 bg-gray-50 p-2 overflow-y-auto w-72 border-r">
         <h2 className="text-gray-500 text-sm mb-1">Groups</h2>
         <ul className="space-y-2">
-          {groups.map((group) => (
+          {(groups || []).map((group) => (
             <li
               key={group.id} // ✅ use groupId instead of id
               className="flex items-center p-2 hover:bg-gray-200 rounded cursor-pointer"

@@ -33,7 +33,7 @@ export default function Chat() {
       <Navbar />
       <div className="p-6 flex flex-col h-[90vh]">
         <div className="flex-1 overflow-y-auto border p-2 rounded mb-2">
-          {messages.map((m, i) => (
+          {(messages || []).map((m, i) => (
             <div key={i} className="mb-1">
               <b>{m.senderId === currentUser.id ? "You" : m.senderId}:</b> {m.content}
             </div>

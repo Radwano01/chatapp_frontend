@@ -302,7 +302,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
             <p className="text-gray-500 text-sm">No groups yet</p>
           </div>
         ) : (
-          groups.map((g) => {
+          (groups || []).map((g) => {
             const groupAvatar = g.avatar 
               ? (g.avatar.startsWith('http') ? g.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${g.avatar}`)
               : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-group.png";
