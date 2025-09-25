@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "../services/api";
 
@@ -14,7 +14,7 @@ export default function AddGroupMembersPage() {
   const [groupMembers, setGroupMembers] = useState([]);
 
   // Helper: resolve numeric group id robustly
-  const resolveNumericGroupId = () => {
+  const resolveNumericGroupId = useCallback(() => {
     const fromParam = Number(groupId);
     if (Number.isFinite(fromParam)) return fromParam;
     const match = location.pathname.match(/\/groups\/(\d+)\/add-members/);
@@ -23,7 +23,7 @@ export default function AddGroupMembersPage() {
       if (Number.isFinite(fromPath)) return fromPath;
     }
     return null;
-  };
+  }, [groupId, location.pathname]);
 
   // Fetch current group members on mount
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function AddGroupMembersPage() {
       }
     };
     fetchGroupMembers();
-  }, [groupId, location.pathname]);
+  }, [groupId, location.pathname, resolveNumericGroupId]);
 
   // Search user by username
   const handleSearch = async () => {

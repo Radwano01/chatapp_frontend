@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
@@ -12,6 +12,20 @@ export default function FriendsPage() {
     const navigate = useNavigate();
 
     const currentUser = useMemo(() => JSON.parse(sessionStorage.getItem("currentUser")), []);
+
+    const normalizeUser = useCallback((user) => ({
+        id: user.id,
+        username: user.username || "",
+        avatar: user.avatar 
+          ? (user.avatar.startsWith('http') ? user.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${user.avatar}`)
+          : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+        relationStatus: user.relationStatus || "NONE",
+        senderId: user.senderId || null,
+        isSender: user.senderId === currentUser.id,
+        fullName: user.fullName || user.username || "",
+        description: user.description || "",
+        userStatus: user.userStatus || "OFFLINE",
+    }), [currentUser.id]);
 
     // Fetch friends
     useEffect(() => {
@@ -30,21 +44,7 @@ export default function FriendsPage() {
             }
         };
         fetchFriends();
-    }, [currentUser]);
-
-    const normalizeUser = (user) => ({
-        id: user.id,
-        username: user.username || "",
-        avatar: user.avatar 
-          ? (user.avatar.startsWith('http') ? user.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${user.avatar}`)
-          : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
-        relationStatus: user.relationStatus || "NONE",
-        senderId: user.senderId || null,
-        isSender: user.senderId === currentUser.id,
-        fullName: user.fullName || user.username || "",
-        description: user.description || "",
-        userStatus: user.userStatus || "OFFLINE",
-    });
+    }, [currentUser, normalizeUser]);
 
 
     // Search user

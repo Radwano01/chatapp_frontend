@@ -207,7 +207,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
       if (messageSub && typeof messageSub.unsubscribe === "function") messageSub.unsubscribe();
       if (typingSub) typingSub.unsubscribe();
     };
-  }, [chatId]);
+  }, [chatId, currentUser.id, selectedChat?.members?.length]);
 
   const handleInputChange = (e) => {
     const value = e.target.value;

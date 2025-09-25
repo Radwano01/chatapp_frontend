@@ -194,7 +194,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
     }
     
     try {
-      const response = await api.delete(`/groups/${groupId}/users/${userId}/remove`, {
+      await api.delete(`/groups/${groupId}/users/${userId}/remove`, {
         headers: { 
           Authorization: `Bearer ${currentUser?.token}`,
           'Content-Type': 'application/json'

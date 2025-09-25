@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../services/api";
-import { uploadToBackend, MESSAGE_TYPES, deleteFromS3 } from "../services/upload";
+import { uploadToBackend, MESSAGE_TYPES } from "../services/upload";
 
 export default function CreateGroup() {
   const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));

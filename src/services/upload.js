@@ -87,7 +87,7 @@ export async function deleteFromS3(filename) {
     const user = JSON.parse(sessionStorage.getItem("currentUser")) || {};
     const token = user.token;
     
-    const response = await api.delete(`/s3/delete`, {
+    await api.delete(`/s3/delete`, {
       params: { filename },
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });

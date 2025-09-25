@@ -5,8 +5,12 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(config => {
-  const user = JSON.parse(sessionStorage.getItem("currentUser"));
-  if (user?.token) config.headers.Authorization = `Bearer ${user.token}`;
+  try {
+    const user = JSON.parse(sessionStorage.getItem("currentUser") || "{}");
+    if (user?.token) config.headers.Authorization = `Bearer ${user.token}`;
+  } catch (error) {
+    console.warn("Failed to parse currentUser from sessionStorage:", error);
+  }
   return config;
 });
 

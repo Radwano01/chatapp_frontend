@@ -12,7 +12,7 @@ export default function Navbar({ currentUser }) {
     try {
       if (currentUser?.token) {
         await api.post(
-          `${process.env.REACT_APP_API_URL}/api/v1/users/logout`,
+          `/users/logout`,
           {},
           {
             headers: {
