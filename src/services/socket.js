@@ -41,7 +41,7 @@ export function connect(token, onConnect) {
 
   // Configure SockJS with CORS-friendly settings
   const socketOptions = {
-    withCredentials: false, // Match backend default (no allowCredentials set)
+    withCredentials: true, // Match backend allowCredentials(true)
     transports: ['websocket', 'xhr-polling', 'xhr-streaming'],
     // Add headers to help with CORS
     headers: {
@@ -53,7 +53,8 @@ export function connect(token, onConnect) {
 
   // SockJS debug
   socket.onopen = () => console.log("✅ SockJS connection opened");
-  socket.onclose = (event) => console.warn("❌ SockJS connection closed:", event);
+  socket.onclose = (event) =>
+    console.warn("❌ SockJS connection closed:", event);
   socket.onerror = (err) => console.error("❌ SockJS connection error:", err);
 
   stompClient = new Client({
@@ -91,7 +92,6 @@ export function connect(token, onConnect) {
 
   stompClient.onWebSocketError = (error) => {
     console.error("WebSocket error:", error);
-    // Attempt to reconnect after a delay
     setTimeout(() => {
       if (!stompClient?.connected) {
         console.log("Attempting to reconnect after WebSocket error...");
@@ -102,7 +102,6 @@ export function connect(token, onConnect) {
 
   stompClient.onWebSocketClose = (event) => {
     console.warn("WebSocket closed:", event);
-    // Attempt to reconnect if not a clean close
     if (!event.wasClean) {
       setTimeout(() => {
         if (!stompClient?.connected) {

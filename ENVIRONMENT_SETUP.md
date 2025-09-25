@@ -81,8 +81,20 @@ public void registerStompEndpoints(StompEndpointRegistry registry) {
     registry.addEndpoint("/ws")
             .addInterceptors(jwtHandshakeInterceptor)
             .setHandshakeHandler(new UserHandshakeHandler())
-            .setAllowedOriginPatterns(domain, "https://*.ngrok-free.dev")
+            .setAllowedOrigins(domain, "https://*.ngrok-free.dev")
             .withSockJS();
+}
+
+// Separate CORS configuration
+@Configuration
+public class CorsConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins(domain, "https://*.ngrok-free.dev")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowCredentials(true);
+    }
 }
 ```
 
