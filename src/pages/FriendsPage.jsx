@@ -28,18 +28,16 @@ export default function FriendsPage() {
     }, []);
 
     const normalizeUser = useCallback((user) => ({
-        id: user.id,
+        id: user.id || null,
         username: user.username || "",
-        avatar: user.avatar 
-          ? (user.avatar.startsWith('http') ? user.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${user.avatar}`)
-          : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+        avatar: user.avatar ? (user.avatar.startsWith("http") ? user.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${user.avatar}`) : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
         relationStatus: user.relationStatus || "NONE",
         senderId: user.senderId || null,
-        isSender: user.senderId === currentUser.id,
+        isSender: currentUser?.id ? user.senderId === currentUser.id : false,
         fullName: user.fullName || user.username || "",
         description: user.description || "",
         userStatus: user.userStatus || "OFFLINE",
-    }), [currentUser.id]);
+      }), [currentUser?.id]);
 
     // Fetch friends
     useEffect(() => {
