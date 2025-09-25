@@ -46,7 +46,13 @@ export default function AddGroupMembersPage() {
     setLoading(true);
     try {
       const res = await api.get(`/users/${username}`);
-      setFoundUser(res.data);
+      // Normalize user data to ensure fullName is available
+      const normalizedUser = {
+        ...res.data,
+        fullName: res.data.fullName || res.data.username || "Unknown User",
+        avatar: res.data.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
+      };
+      setFoundUser(normalizedUser);
     } catch (err) {
       console.error(err);
       alert("User not found ❌");

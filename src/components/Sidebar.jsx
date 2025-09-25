@@ -59,9 +59,15 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
           headers: { Authorization: `Bearer ${currentUser?.token}` },
         });
         const user = res.data;
+        // Normalize user data to ensure fullName is available
+        const normalizedUser = {
+          ...user,
+          fullName: user.fullName || user.username || "Unknown User",
+          avatar: user.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
+        };
         setLocalChats((prev) =>
           prev.map((pc) =>
-            pc.otherUserId === id ? { ...pc, ...user, otherUserId: pc.otherUserId } : pc
+            pc.otherUserId === id ? { ...pc, ...normalizedUser, otherUserId: pc.otherUserId } : pc
           )
         );
       } catch (err) {
