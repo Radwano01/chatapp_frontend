@@ -130,6 +130,8 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
       __raw: chat.__raw,
     };
     onSelectChat(selected);
+    // Navigate to the chat URL
+    navigate(`/chat/${chat.chatId}`);
   };
 
   // View details button

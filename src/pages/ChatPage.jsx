@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import ChatWindow from "../components/ChatWindow";
@@ -12,6 +12,7 @@ export default function ChatPage() {
   const [chatRooms, setChatRooms] = useState([]);
   const [users, setUsers] = useState([]);
   const location = useLocation();
+  const { chatId } = useParams();
 
   // Handle navigation from other pages (e.g., FriendsPage)
   useEffect(() => {
@@ -26,6 +27,16 @@ export default function ChatPage() {
       });
     }
   }, [location.state]);
+
+  // Handle chatId from URL parameter
+  useEffect(() => {
+    if (chatId && chatRooms.length > 0) {
+      const chat = chatRooms.find(room => room.chatId === chatId);
+      if (chat) {
+        setSelectedChat(chat);
+      }
+    }
+  }, [chatId, chatRooms]);
 
   // Ensure socket connection on page load/refresh
   useEffect(() => {

@@ -78,7 +78,7 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
       if (typeof onSelectChat === "function") {
         onSelectChat({
           id: chatroom.id,
-          chatId: chatroom.id,
+          chatId: chatroom.chatId,
           members: chatroom.members || [currentUser.id, localUser.id],
           username: chatroom.username || localUser.username,
           fullName: chatroom.fullName || localUser.fullName,
@@ -87,11 +87,11 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
           status: chatroom.status || localUser.status,
           relationStatus: chatroom.relationStatus || localUser.relationStatus,
           senderId: chatroom.senderId || localUser.senderId,
-          uniqueKey: `DIRECT_${chatroom.id}`,
+          uniqueKey: `DIRECT_${chatroom.chatId}`,
         });
       }
 
-      navigate(`/chat/${chatroom.id}`);
+      navigate(`/chat/${chatroom.chatId}`);
       onClose();
     } catch (err) {
       console.error("Start chat failed:", err);
