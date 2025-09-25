@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 export default function FriendsPage() {
+    console.log("FriendsPage component rendered!");
+    alert("FriendsPage component loaded!");
+    
     const [friends, setFriends] = useState([]);
     const [pending, setPending] = useState([]);
     const [search, setSearch] = useState("");
@@ -10,8 +13,19 @@ export default function FriendsPage() {
     const [lastSearch, setLastSearch] = useState("");
     const [detailUser, setDetailUser] = useState(null);
     const navigate = useNavigate();
+    
+    console.log("FriendsPage state:", { friends, pending, search, searchResult });
 
-    const currentUser = useMemo(() => JSON.parse(sessionStorage.getItem("currentUser")), []);
+    const currentUser = useMemo(() => {
+        try {
+            const user = JSON.parse(sessionStorage.getItem("currentUser"));
+            console.log("Current user loaded:", user);
+            return user;
+        } catch (error) {
+            console.error("Error parsing currentUser:", error);
+            return null;
+        }
+    }, []);
 
     const normalizeUser = useCallback((user) => ({
         id: user.id,
