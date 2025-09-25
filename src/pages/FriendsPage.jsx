@@ -57,7 +57,8 @@ export default function FriendsPage() {
             const res = await api.get(`/users/${query}`, {
                 headers: { Authorization: `Bearer ${currentUser?.token}` },
             });
-            const data = res.data;
+            const data = res?.data;
+            console.log("Search API response:", data);
 
             if (!data || data.id === currentUser.id) {
                 if (data?.id === currentUser.id) alert("You cannot add yourself!");
@@ -66,7 +67,16 @@ export default function FriendsPage() {
                 return;
             }
 
-            setSearchResult(normalizeUser(data));
+            // Normalize the search result data to ensure all required fields are present
+            const normalizedData = {
+                ...data,
+                fullName: data.fullName || data.username || "Unknown User",
+                description: data.description || "No description",
+                avatar: data.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
+            };
+            console.log("Normalized search data:", normalizedData);
+
+            setSearchResult(normalizedData);
             setLastSearch(query);
         } catch (err) {
             console.error("Friend not found", err);
