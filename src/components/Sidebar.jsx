@@ -17,7 +17,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
 
   // Normalize incoming chatRooms into a consistent local shape
   useEffect(() => {
-    const normalized = (chatRooms || []).map((c) => {
+    const normalized = (Array.isArray(chatRooms) ? chatRooms : []).map((c) => {
       return {
         id: c.id,
         chatId: c.chatId,
@@ -243,7 +243,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
         {localChats.length === 0 ? (
           <p className="text-gray-500 text-sm">No chats yet</p>
         ) : (
-          localChats.map((chat) => (
+          (Array.isArray(localChats) ? localChats : []).map((chat) => (
             <div
               key={chat.chatId}
               className="flex items-center p-2 mb-2 bg-white shadow-sm rounded justify-between"
@@ -302,7 +302,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
             <p className="text-gray-500 text-sm">No groups yet</p>
           </div>
         ) : (
-          (groups || []).map((g) => {
+          (Array.isArray(groups) ? groups : []).map((g) => {
             const groupAvatar = g.avatar 
               ? (g.avatar.startsWith('http') ? g.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${g.avatar}`)
               : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-group.png";

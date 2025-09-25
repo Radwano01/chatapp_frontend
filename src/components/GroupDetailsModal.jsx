@@ -154,7 +154,7 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
         {/* Members List */}
         <h3 className="font-semibold mb-2">Members</h3>
         <ul className="space-y-2">
-          {(group.members || []).map((member) => {
+          {(Array.isArray(group.members) ? group.members : []).map((member) => {
             const memberRole = member.role;
             const isMemberOwner = memberRole === "OWNER";
 

@@ -140,7 +140,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
     const fetchMessages = async () => {
       try {
         const res = await api.get(`/messages/${chatId}`);
-        const formatted = (res.data || []).map(msg => ({
+        const formatted = (Array.isArray(res.data) ? res.data : []).map(msg => ({
           ...msg,
           senderName: msg.senderName || "Unknown",
           senderAvatar: msg.senderAvatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
@@ -372,7 +372,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
-        {(messages || []).map((msg, index) => (
+        {(Array.isArray(messages) ? messages : []).map((msg, index) => (
           <div key={msg.id || index} className={`flex ${msg.senderId === currentUser.id ? "justify-end" : "justify-start"} mb-1`}>
             <div className={`p-2 rounded ${msg.deleted ? "bg-gray-200 text-gray-600" : (msg.senderId === currentUser.id ? "bg-blue-500 text-white" : "bg-white")}`}>
               <div className="flex items-center justify-between mb-1">
