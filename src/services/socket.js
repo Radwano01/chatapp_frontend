@@ -1,5 +1,4 @@
 import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
 import { ENV_CONFIG } from "../config/environment";
 
 let stompClient = null;
@@ -39,27 +38,10 @@ export function connect(token, onConnect) {
   const wsUrl = `${ENV_CONFIG.FULL_WS_URL}?token=${token}`;
   console.log("WebSocket URL:", wsUrl);
 
-  // Configure SockJS with CORS-friendly settings
-  const socketOptions = {
-    withCredentials: true, // Match backend allowCredentials(true)
-    transports: ['websocket', 'xhr-polling', 'xhr-streaming'],
-    // Add headers to help with CORS
-    headers: {
-      'ngrok-skip-browser-warning': 'true'
-    }
-  };
-
-  const socket = new SockJS(wsUrl, null, socketOptions);
-
-  // SockJS debug
-  socket.onopen = () => console.log("✅ SockJS connection opened");
-  socket.onclose = (event) =>
-    console.warn("❌ SockJS connection closed:", event);
-  socket.onerror = (err) => console.error("❌ SockJS connection error:", err);
-
   stompClient = new Client({
-    webSocketFactory: () => socket,
+    brokerURL: wsUrl, // ✅ direct WebSocket, no SockJS
     reconnectDelay: 5000,
+    debug: (str) => console.log("[STOMP DEBUG]", str),
   });
 
   stompClient.onConnect = (frame) => {
