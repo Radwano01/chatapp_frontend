@@ -14,68 +14,28 @@ export function getStompClient() {
 export function connect(token, onConnect) {
   console.log("=== CONNECT FUNCTION CALLED ===");
   console.log("Token provided:", !!token);
-  console.log("Token value:", token);
   console.log("Current stompClient state:", {
     exists: !!stompClient,
     active: stompClient?.active,
-    connected: stompClient?.connected
+    connected: stompClient?.connected,
   });
 
-  if (stompClient && stompClient.active) {
-    console.warn("STOMP client already active");
-    return;
-  }
-
-  // Disconnect existing client if any
+  // Deactivate any existing client
   if (stompClient) {
-    console.log("Disconnecting existing client");
+    console.log("Deactivating previous STOMP client...");
     stompClient.deactivate();
     stompClient = null;
   }
 
   const wsUrl = `${process.env.REACT_APP_API_URL}${process.env.REACT_APP_WS_PATH}?token=${token}`;
   console.log("WebSocket URL:", wsUrl);
-  console.log("JWT Token:", token);
-  console.log("Token length:", token?.length);
-  console.log("Environment variables:", {
-    REACT_APP_API_URL: process.env.REACT_APP_API_URL,
-    REACT_APP_WS_PATH: process.env.REACT_APP_WS_PATH
-  });
-  
-  const socket = new SockJS(wsUrl, null, {
-    withCredentials: false
-  });
-  
-  // Add SockJS event listeners for debugging
-  socket.onopen = function() {
-    console.log("✅ SockJS connection opened successfully");
-  };
-  
-  socket.onclose = function(event) {
-    console.log("❌ SockJS connection closed:", event);
-    console.log("Close event details:", {
-      code: event.code,
-      reason: event.reason,
-      wasClean: event.wasClean
-    });
-  };
-  
-  socket.onerror = function(error) {
-    console.error("❌ SockJS connection error:", error);
-    console.error("Error details:", {
-      type: error.type,
-      target: error.target,
-      currentTarget: error.currentTarget
-    });
-  };
-  
-  socket.onmessage = function(event) {
-    console.log("📨 SockJS message received:", event.data);
-  };
-  
-  // Check if socket is ready
-  console.log("Socket ready state:", socket.readyState);
-  console.log("Socket URL:", socket.url);
+
+  const socket = new SockJS(wsUrl, null, { withCredentials: false });
+
+  // SockJS debug
+  socket.onopen = () => console.log("✅ SockJS connection opened");
+  socket.onclose = (event) => console.warn("❌ SockJS connection closed:", event);
+  socket.onerror = (err) => console.error("❌ SockJS connection error:", err);
 
   stompClient = new Client({
     webSocketFactory: () => socket,
@@ -83,31 +43,24 @@ export function connect(token, onConnect) {
   });
 
   stompClient.onConnect = (frame) => {
-    console.log("STOMP client connected successfully", frame);
+    console.log("STOMP client connected ✅", frame);
     console.log("STOMP client state:", {
       active: stompClient.active,
       connected: stompClient.connected,
-      state: stompClient.state
+      state: stompClient.state,
     });
 
-    // Process any queued subscriptions immediately
-    console.log("Processing queued subscriptions and messages");
-    
-    // Process any queued subscriptions
-    pendingSubscriptions.forEach(({ chatId, callback, isGroup }) => {
-      console.log("Processing queued subscription for chatId:", chatId);
-      _subscribe(chatId, callback, isGroup);
-    });
-    pendingSubscriptions.length = 0;
+    // Flush queued subscriptions
+    while (pendingSubscriptions.length > 0) {
+      const { chatId, callback, isGroup } = pendingSubscriptions.shift();
+      _subscribe(chatId, callback, isGroup, true);
+    }
 
-    // Flush any queued messages
+    // Flush queued messages
     while (pendingMessages.length > 0) {
       const { destination, body } = pendingMessages.shift();
-      try {
-        stompClient.publish({ destination, body });
-      } catch (e) {
-        console.warn("Failed to publish queued message", e);
-      }
+      stompClient.publish({ destination, body });
+      console.log("Queued message sent to:", destination);
     }
 
     if (onConnect) onConnect();
@@ -115,7 +68,6 @@ export function connect(token, onConnect) {
 
   stompClient.onStompError = (frame) => {
     console.error("STOMP broker error:", frame.headers["message"], frame.body);
-    console.error("STOMP error details:", frame);
   };
 
   stompClient.onWebSocketError = (error) => {
@@ -128,61 +80,33 @@ export function connect(token, onConnect) {
 
   console.log("Activating STOMP client...");
   stompClient.activate();
-  console.log("STOMP client activation called");
-  
-  // Add a timeout to check connection status
-  setTimeout(() => {
-    console.log("Connection status after 2 seconds:", {
-      active: stompClient.active,
-      connected: stompClient.connected,
-      state: stompClient.state
-    });
-  }, 2000);
 }
 
 /** Internal subscription helper */
-function _subscribe(chatId, callback, isGroup) {
-  console.log("_subscribe called with chatId:", chatId, "isGroup:", isGroup);
-  console.log("STOMP client state:", {
-    exists: !!stompClient,
-    active: stompClient?.active,
-    connected: stompClient?.connected,
-    state: stompClient?.state
-  });
-
-  if (!stompClient) {
-    console.warn("STOMP client not initialized");
-    return;
-  }
-
-  if (!stompClient.active) {
-    console.warn("STOMP client not active for subscription");
-    return;
-  }
-
-  // Check if connected with a more robust method
-  if (!stompClient.connected) {
-    console.warn("STOMP client not connected yet, will retry");
-    // Re-queue the subscription
-    pendingSubscriptions.push({ chatId, callback, isGroup });
-    return;
-  }
-
+function _subscribe(chatId, callback, isGroup, fromQueue = false) {
   const destination = isGroup
     ? `/topic/chatroom/${chatId}`
     : `/user/queue/chatroom/${chatId}`;
 
+  if (!stompClient) {
+    console.warn("_subscribe: STOMP client not initialized");
+    return;
+  }
+
+  if (!stompClient.connected && !fromQueue) {
+    console.warn("_subscribe: STOMP client not connected yet, queuing");
+    pendingSubscriptions.push({ chatId, callback, isGroup });
+    return;
+  }
+
   try {
-    console.log("Subscribing to:", destination);
     const subscription = stompClient.subscribe(destination, (message) => {
-      console.log("Received message on", destination, ":", message.body);
       callback(JSON.parse(message.body));
     });
-    console.log("Subscription successful:", subscription);
+    console.log("_subscribe successful:", destination);
     return subscription;
   } catch (error) {
-    console.error("Failed to subscribe to chat:", error);
-    // Re-queue the subscription for retry
+    console.error("_subscribe failed, re-queuing:", error);
     pendingSubscriptions.push({ chatId, callback, isGroup });
     return null;
   }
@@ -190,68 +114,44 @@ function _subscribe(chatId, callback, isGroup) {
 
 /** Subscribe to a chat room */
 export function subscribeToChat(chatId, callback, isGroup = false) {
-  if (!stompClient || !stompClient.active || !stompClient.connected) {
-    // Queue subscription until connected
-    console.log("STOMP not ready, queueing subscription for chatId:", chatId);
+  if (!stompClient || !stompClient.connected) {
+    console.log("STOMP not connected, queuing subscription for chatId:", chatId);
     pendingSubscriptions.push({ chatId, callback, isGroup });
     return null;
   }
   return _subscribe(chatId, callback, isGroup);
 }
 
-/** Send chat message (server identifies sender via Principal) */
+/** Send chat message */
 export function sendChatMessage(message) {
   const destination = "/app/chat.sendMessage";
   const body = JSON.stringify(message);
 
-  if (stompClient && stompClient.active && stompClient.connected) {
+  if (stompClient?.connected) {
     stompClient.publish({ destination, body });
     return;
   }
 
-  console.warn("STOMP not connected, queueing message");
+  console.warn("STOMP not connected, queuing message");
   pendingMessages.push({ destination, body });
 }
 
 /** Send a message to a group chat */
 export function sendGroupMessage(message) {
-  if (!stompClient) {
-    console.warn("STOMP client not initialized");
-    return;
-  }
+  const destination = "/app/chat.group";
+  const body = JSON.stringify(message);
 
-  const publishMessage = () => {
-    stompClient.publish({
-      destination: "/app/chat.group",
-      body: JSON.stringify(message),
-    });
-  };
-
-  if (stompClient.active) {
-    publishMessage();
+  if (stompClient?.connected) {
+    stompClient.publish({ destination, body });
   } else {
-    console.warn("STOMP client not active, queuing message");
-    // wait for connection
-    const waitForConnect = setInterval(() => {
-      if (stompClient.active) {
-        publishMessage();
-        clearInterval(waitForConnect);
-      }
-    }, 100);
+    console.warn("STOMP not connected, queuing group message");
+    pendingMessages.push({ destination, body });
   }
 }
 
-
-/** Check if socket is connected and reconnect if needed */
+/** Ensure connected, reconnect if needed */
 export function ensureConnected(token, onConnect) {
-  console.log("ensureConnected called, current state:", {
-    exists: !!stompClient,
-    active: stompClient?.active,
-    connected: stompClient?.connected,
-    state: stompClient?.state
-  });
-
-  if (!stompClient || !stompClient.active || !stompClient.connected) {
+  if (!stompClient?.connected) {
     console.log("Socket not connected, reconnecting...");
     connect(token, onConnect);
   } else {
@@ -265,5 +165,7 @@ export function disconnectSocket() {
     stompClient.deactivate();
     stompClient = null;
     pendingSubscriptions.length = 0;
+    pendingMessages.length = 0;
+    console.log("STOMP client disconnected");
   }
 }
