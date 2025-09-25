@@ -17,6 +17,12 @@ export function connect(token, onConnect) {
     return;
   }
 
+  // Disconnect existing client if any
+  if (stompClient) {
+    stompClient.deactivate();
+    stompClient = null;
+  }
+
   const wsUrl = `${process.env.REACT_APP_API_URL}${process.env.REACT_APP_WS_PATH}?token=${token}`;
   console.log("WebSocket URL:", wsUrl);
   console.log("Environment variables:", {
@@ -125,6 +131,14 @@ export function sendGroupMessage(message) {
   }
 }
 
+
+/** Check if socket is connected and reconnect if needed */
+export function ensureConnected(token, onConnect) {
+  if (!stompClient || !stompClient.active) {
+    console.log("Socket not connected, reconnecting...");
+    connect(token, onConnect);
+  }
+}
 
 /** Disconnect WebSocket cleanly */
 export function disconnectSocket() {

@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import ChatWindow from "../components/ChatWindow";
 import api from "../services/api";
+import { ensureConnected } from "../services/socket";
 
 export default function ChatPage() {
   const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
@@ -25,6 +26,15 @@ export default function ChatPage() {
       });
     }
   }, [location.state]);
+
+  // Ensure socket connection on page load/refresh
+  useEffect(() => {
+    if (currentUser?.token) {
+      ensureConnected(currentUser.token, () => {
+        console.log("Socket reconnected successfully");
+      });
+    }
+  }, [currentUser?.token]);
 
   // Fetch chatrooms from backend
   useEffect(() => {
