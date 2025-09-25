@@ -49,9 +49,17 @@ export default function FriendsPage() {
 
     // Search user
     const handleFindFriend = async () => {
+        console.log("handleFindFriend called!");
         const query = search.trim();
-        if (!query) return;
-        if (query === lastSearch && searchResult) return;
+        console.log("Search query:", query);
+        if (!query) {
+            console.log("No query provided, returning");
+            return;
+        }
+        if (query === lastSearch && searchResult) {
+            console.log("Same query as last search, returning");
+            return;
+        }
 
         try {
             console.log("Searching for user:", query);
@@ -288,10 +296,16 @@ export default function FriendsPage() {
                     type="text"
                     placeholder="Search users..."
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) => {
+                        console.log("Search input changed:", e.target.value);
+                        setSearch(e.target.value);
+                    }}
                     className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <button onClick={handleFindFriend} className="bg-blue-600 text-white px-4 rounded hover:bg-blue-700">Find</button>
+                <button onClick={() => {
+                    console.log("Find button clicked!");
+                    handleFindFriend();
+                }} className="bg-blue-600 text-white px-4 rounded hover:bg-blue-700">Find</button>
             </div>
 
             <ul className="space-y-2">
