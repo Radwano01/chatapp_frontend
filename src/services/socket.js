@@ -41,24 +41,29 @@ export function connect(token, onConnect) {
   stompClient.onConnect = (frame) => {
     console.log("STOMP client connected successfully");
 
-    // Process any queued subscriptions
-    pendingSubscriptions.forEach(({ chatId, callback, isGroup }) => {
-      console.log("Processing queued subscription for chatId:", chatId);
-      _subscribe(chatId, callback, isGroup);
-    });
-    pendingSubscriptions.length = 0;
+    // Add a small delay to ensure the connection is fully established
+    setTimeout(() => {
+      console.log("Processing queued subscriptions and messages");
+      
+      // Process any queued subscriptions
+      pendingSubscriptions.forEach(({ chatId, callback, isGroup }) => {
+        console.log("Processing queued subscription for chatId:", chatId);
+        _subscribe(chatId, callback, isGroup);
+      });
+      pendingSubscriptions.length = 0;
 
-    // Flush any queued messages
-    while (pendingMessages.length > 0) {
-      const { destination, body } = pendingMessages.shift();
-      try {
-        stompClient.publish({ destination, body });
-      } catch (e) {
-        console.warn("Failed to publish queued message", e);
+      // Flush any queued messages
+      while (pendingMessages.length > 0) {
+        const { destination, body } = pendingMessages.shift();
+        try {
+          stompClient.publish({ destination, body });
+        } catch (e) {
+          console.warn("Failed to publish queued message", e);
+        }
       }
-    }
 
-    if (onConnect) onConnect();
+      if (onConnect) onConnect();
+    }, 100); // Small delay to ensure connection is fully ready
   };
 
   stompClient.onStompError = (frame) => {
@@ -70,8 +75,16 @@ export function connect(token, onConnect) {
 
 /** Internal subscription helper */
 function _subscribe(chatId, callback, isGroup) {
-  if (!stompClient || !stompClient.active || !stompClient.connected) {
-    console.warn("STOMP client not ready for subscription");
+  if (!stompClient || !stompClient.active) {
+    console.warn("STOMP client not active for subscription");
+    return;
+  }
+
+  // Check if connected with a more robust method
+  if (!stompClient.connected) {
+    console.warn("STOMP client not connected yet, will retry");
+    // Re-queue the subscription
+    pendingSubscriptions.push({ chatId, callback, isGroup });
     return;
   }
 
@@ -80,11 +93,14 @@ function _subscribe(chatId, callback, isGroup) {
     : `/user/queue/chatroom/${chatId}`;
 
   try {
+    console.log("Subscribing to:", destination);
     return stompClient.subscribe(destination, (message) => {
       callback(JSON.parse(message.body));
     });
   } catch (error) {
     console.error("Failed to subscribe to chat:", error);
+    // Re-queue the subscription for retry
+    pendingSubscriptions.push({ chatId, callback, isGroup });
     return null;
   }
 }

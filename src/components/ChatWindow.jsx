@@ -237,30 +237,40 @@ export default function ChatWindow({ currentUser, selectedChat }) {
 
     const client = getStompClient();
     if (client && client.connected) {
-      client.publish({
-        destination: "/app/chat.typing",
-        body: JSON.stringify({
-          chatId,
-          senderId: currentUser.id,
-          fullName: currentUser.fullName,
-          username: currentUser.username,
-          typing: value.length > 0,
-        }),
-      });
+      try {
+        client.publish({
+          destination: "/app/chat.typing",
+          body: JSON.stringify({
+            chatId,
+            senderId: currentUser.id,
+            fullName: currentUser.fullName,
+            username: currentUser.username,
+            typing: value.length > 0,
+          }),
+        });
+      } catch (error) {
+        console.warn("Failed to publish typing status:", error);
+      }
     }
 
     clearTimeout(typingTimeout.current);
     typingTimeout.current = setTimeout(() => {
-      client?.publish({
-        destination: "/app/chat.typing",
-        body: JSON.stringify({
-          chatId,
-          senderId: currentUser.id,
-          fullName: currentUser.fullName,
-          username: currentUser.username,
-          typing: false,
-        }),
-      });
+      if (client && client.connected) {
+        try {
+          client.publish({
+            destination: "/app/chat.typing",
+            body: JSON.stringify({
+              chatId,
+              senderId: currentUser.id,
+              fullName: currentUser.fullName,
+              username: currentUser.username,
+              typing: false,
+            }),
+          });
+        } catch (error) {
+          console.warn("Failed to publish typing stop:", error);
+        }
+      }
     }, 2000);
   };
 
@@ -325,16 +335,20 @@ export default function ChatWindow({ currentUser, selectedChat }) {
 
     const client = getStompClient();
     if (client && client.connected) {
-      client.publish({
-        destination: "/app/chat.typing",
-        body: JSON.stringify({
-          chatId,
-          senderId: currentUser.id,
-          fullName: currentUser.fullName,
-          username: currentUser.username,
-          typing: false,
-        }),
-      });
+      try {
+        client.publish({
+          destination: "/app/chat.typing",
+          body: JSON.stringify({
+            chatId,
+            senderId: currentUser.id,
+            fullName: currentUser.fullName,
+            username: currentUser.username,
+            typing: false,
+          }),
+        });
+      } catch (error) {
+        console.warn("Failed to publish typing stop after send:", error);
+      }
     }
   };
 
