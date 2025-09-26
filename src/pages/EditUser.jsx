@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import { uploadToBackend, MESSAGE_TYPES, deleteFromS3 } from "../services/upload";
+import { uploadToBackend, MESSAGE_TYPES } from "../services/upload";
 import AvatarCropper from "../components/AvatarCropper";
 
 export default function EditUser() {
@@ -89,16 +89,6 @@ export default function EditUser() {
         setIsUploading(true);
         setUploadProgress(0);
         
-        // Delete old image from S3 if it exists and is not a default image
-        if (originalUser?.avatar || originalUser?.image) {
-          const oldImageUrl = originalUser.avatar || originalUser.image;
-          if (oldImageUrl && !oldImageUrl.includes('user-blue.jpg')) {
-            const deleteSuccess = await deleteFromS3(oldImageUrl);
-            if (!deleteSuccess) {
-              console.warn("Failed to delete previous avatar, but continuing with upload");
-            }
-          }
-        }
         
         const { filename } = await uploadToBackend(
           user.image,

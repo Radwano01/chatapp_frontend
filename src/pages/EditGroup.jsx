@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
-import { uploadToBackend, MESSAGE_TYPES, deleteFromS3 } from "../services/upload";
+import { uploadToBackend, MESSAGE_TYPES } from "../services/upload";
 
 export default function EditGroupPage() {
   const { groupId } = useParams();
@@ -71,15 +71,6 @@ export default function EditGroupPage() {
         setIsUploading(true);
         setUploadProgress(0);
         
-        // Delete old group avatar from S3 if it exists and is not a default image
-        if (originalData?.avatar) {
-          if (originalData.avatar && !originalData.avatar.includes('user-group.png')) {
-            const deleteSuccess = await deleteFromS3(originalData.avatar);
-            if (!deleteSuccess) {
-              console.warn("Failed to delete previous group avatar, but continuing with upload");
-            }
-          }
-        }
         
         const { filename } = await uploadToBackend(
           avatarFile,
