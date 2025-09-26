@@ -64,10 +64,6 @@ export default function FriendsPage() {
         }
 
         try {
-            console.log("Searching for user:", query);
-            console.log("API URL:", `/users/${query}`);
-            console.log("Current user token:", currentUser?.token ? "Present" : "Missing");
-            
             const res = await api.get(`/users/${query}`, {
                 headers: { 
                     Authorization: `Bearer ${currentUser?.token}`,
@@ -75,10 +71,8 @@ export default function FriendsPage() {
                 },
             });
             const data = res?.data;
-            console.log("Search API response:", data);
 
             if (!data || data.id === currentUser.id) {
-                if (data?.id === currentUser.id) alert("You cannot add yourself!");
                 setSearchResult(null);
                 setLastSearch("");
                 return;
@@ -91,14 +85,10 @@ export default function FriendsPage() {
                 description: data.description || "No description",
                 avatar: data.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
             };
-            console.log("Normalized search data:", normalizedData);
 
             setSearchResult(normalizedData);
             setLastSearch(query);
         } catch (err) {
-            console.error("Friend not found", err);
-            console.error("Error details:", err.response?.data);
-            console.error("Error status:", err.response?.status);
             setSearchResult(null);
             setLastSearch("");
         }
@@ -135,7 +125,7 @@ export default function FriendsPage() {
                 userStatus: normalizedDetails.status || baseUser.userStatus || "OFFLINE",
             });
         } catch (err) {
-            console.error("Failed to fetch user details:", err);
+            // Handle error silently
         }
     };
 
@@ -143,9 +133,8 @@ export default function FriendsPage() {
         if (!friendId) return;
         try {
             await api.post(`/friends/${friendId}`);
-            alert("Friend request sent!");
 
-            // Don’t force senderId here – let backend decide.
+            // Don't force senderId here – let backend decide.
             const newPending = normalizeUser({
                 id: friendId,
                 username: searchResult?.username || "Unknown",
@@ -169,8 +158,7 @@ export default function FriendsPage() {
             setDetailUser(prev => prev ? { ...prev, ...newPending } : prev);
 
         } catch (err) {
-            console.error(err);
-            alert("Failed to send friend request");
+            // Handle error silently
         }
     };
 
@@ -186,7 +174,7 @@ export default function FriendsPage() {
             if (searchResult?.id === friendId) setSearchResult(null);
             if (detailUser?.id === friendId) setDetailUser(null);
         } catch (err) {
-            console.error(err);
+            // Handle error silently
         }
     };
 
@@ -204,7 +192,7 @@ export default function FriendsPage() {
             if (searchResult?.id === friendId) setSearchResult(null);
             if (detailUser?.id === friendId) setDetailUser(null);
         } catch (err) {
-            console.error(err);
+            // Handle error silently
         }
     };
 
@@ -215,8 +203,6 @@ export default function FriendsPage() {
                 headers: { Authorization: `Bearer ${currentUser?.token}` },
             });
             const chatroom = res.data;
-            console.log("FriendsPage - Backend response:", res.data);
-            console.log("FriendsPage - chatroom.chatId:", chatroom.chatId);
             
             const selectedChat = {
                 id: chatroom.id,
@@ -237,8 +223,7 @@ export default function FriendsPage() {
                 state: { selectedChat }
             });
         } catch (err) {
-            console.error("Failed to create chatroom:", err);
-            alert("Unable to start chat. Please try again.");
+            // Handle error silently
         }
     };
 
@@ -308,16 +293,10 @@ export default function FriendsPage() {
                     type="text"
                     placeholder="Search users..."
                     value={search}
-                    onChange={(e) => {
-                        console.log("Search input changed:", e.target.value);
-                        setSearch(e.target.value);
-                    }}
+                    onChange={(e) => setSearch(e.target.value)}
                     className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <button onClick={() => {
-                    console.log("Find button clicked!");
-                    handleFindFriend();
-                }} className="bg-blue-600 text-white px-4 rounded hover:bg-blue-700">Find</button>
+                <button onClick={handleFindFriend} className="bg-blue-600 text-white px-4 rounded hover:bg-blue-700">Find</button>
             </div>
 
             <ul className="space-y-2">
