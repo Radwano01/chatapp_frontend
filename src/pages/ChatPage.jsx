@@ -74,7 +74,7 @@ export default function ChatPage() {
   }, []);
 
   return (
-    <div className="flex flex-col sm:flex-row h-screen pt-16">
+    <div className="flex flex-col sm:flex-row h-screen">
       <Sidebar
         currentUser={currentUser}
         users={users}
@@ -85,7 +85,7 @@ export default function ChatPage() {
 
       <div className="flex-1 flex flex-col">
         <Navbar currentUser={currentUser} />
-        <div className="flex-1 bg-gray-100 overflow-y-auto">
+        <div className="flex-1 bg-gray-100 overflow-y-auto mt-16">
           {selectedChat ? (
             <ChatWindow
               key={selectedChat.chatId}
