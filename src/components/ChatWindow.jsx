@@ -3,6 +3,7 @@ import { getStompClient, sendChatMessage, sendGroupMessage, subscribeToChat, con
 import { uploadToBackend, MESSAGE_TYPES } from "../services/upload";
 import api from "../services/api";
 import ImagePreviewModal from "./ImagePreviewModal";
+import AudioMessagePlayer from "./AudioMessagePlayer";
 
 export default function ChatWindow({ currentUser, selectedChat }) {
   const [messages, setMessages] = useState([]);
@@ -418,9 +419,9 @@ export default function ChatWindow({ currentUser, selectedChat }) {
               {msg.media && !msg.deleted && (() => {
                 const url = buildMediaUrl(msg.media);
                 const t = msg.messageType || inferTypeFromKey(msg.media);
-                if (t === MESSAGE_TYPES.IMAGE) return <img src={url} alt="media" className="max-w-[200px] sm:max-w-xs rounded mt-2" />;
+                if (t === MESSAGE_TYPES.IMAGE) return <img src={url} alt="media" className="max-w-[200px] sm:max-w-xs rounded mt-2 cursor-pointer hover:opacity-90 transition" onClick={() => setPreviewImage(url)} />;
                 if (t === MESSAGE_TYPES.VIDEO) return <video src={url} className="max-w-[200px] sm:max-w-xs rounded mt-2" controls preload="metadata" />;
-                if (t === MESSAGE_TYPES.VOICE) return <AudioMessagePlayer src={url} />;
+                if (t === MESSAGE_TYPES.VOICE) return <AudioMessagePlayer src={url} duration={msg.duration} />;
                 return <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 underline break-all mt-2">{msg.media}</a>;
               })()}
             </div>
