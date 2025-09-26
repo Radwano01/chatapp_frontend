@@ -77,60 +77,60 @@ export default function AvatarCropper({ imageFile, onCrop, onCancel }) {
     }));
   };
 
-  const drawCanvas = () => {
-    if (!image || !canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    
-    // Set canvas size
-    const displaySize = 400;
-    canvas.width = displaySize;
-    canvas.height = displaySize;
-
-    // Calculate scale to fit image in canvas
-    const scale = Math.min(displaySize / image.width, displaySize / image.height);
-    const scaledWidth = image.width * scale;
-    const scaledHeight = image.height * scale;
-    
-    // Center the image
-    const x = (displaySize - scaledWidth) / 2;
-    const y = (displaySize - scaledHeight) / 2;
-
-    // Clear canvas
-    ctx.clearRect(0, 0, displaySize, displaySize);
-
-    // Draw image
-    ctx.drawImage(image, x, y, scaledWidth, scaledHeight);
-
-    // Draw overlay
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(0, 0, displaySize, displaySize);
-
-    // Draw crop area
-    const cropX = x + (cropArea.x * scale);
-    const cropY = y + (cropArea.y * scale);
-    const cropSize = cropArea.size * scale;
-
-    // Clear the crop area
-    ctx.clearRect(cropX, cropY, cropSize, cropSize);
-    ctx.drawImage(image, cropArea.x, cropArea.y, cropArea.size, cropArea.size, cropX, cropY, cropSize, cropSize);
-
-    // Draw crop border
-    ctx.strokeStyle = '#3b82f6';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(cropX, cropY, cropSize, cropSize);
-
-    // Draw corner handles
-    const handleSize = 8;
-    ctx.fillStyle = '#3b82f6';
-    ctx.fillRect(cropX - handleSize/2, cropY - handleSize/2, handleSize, handleSize);
-    ctx.fillRect(cropX + cropSize - handleSize/2, cropY - handleSize/2, handleSize, handleSize);
-    ctx.fillRect(cropX - handleSize/2, cropY + cropSize - handleSize/2, handleSize, handleSize);
-    ctx.fillRect(cropX + cropSize - handleSize/2, cropY + cropSize - handleSize/2, handleSize, handleSize);
-  };
-
   useEffect(() => {
+    const drawCanvas = () => {
+      if (!image || !canvasRef.current) return;
+
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      
+      // Set canvas size
+      const displaySize = 400;
+      canvas.width = displaySize;
+      canvas.height = displaySize;
+
+      // Calculate scale to fit image in canvas
+      const scale = Math.min(displaySize / image.width, displaySize / image.height);
+      const scaledWidth = image.width * scale;
+      const scaledHeight = image.height * scale;
+      
+      // Center the image
+      const x = (displaySize - scaledWidth) / 2;
+      const y = (displaySize - scaledHeight) / 2;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, displaySize, displaySize);
+
+      // Draw image
+      ctx.drawImage(image, x, y, scaledWidth, scaledHeight);
+
+      // Draw overlay
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fillRect(0, 0, displaySize, displaySize);
+
+      // Draw crop area
+      const cropX = x + (cropArea.x * scale);
+      const cropY = y + (cropArea.y * scale);
+      const cropSize = cropArea.size * scale;
+
+      // Clear the crop area
+      ctx.clearRect(cropX, cropY, cropSize, cropSize);
+      ctx.drawImage(image, cropArea.x, cropArea.y, cropArea.size, cropArea.size, cropX, cropY, cropSize, cropSize);
+
+      // Draw crop border
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(cropX, cropY, cropSize, cropSize);
+
+      // Draw corner handles
+      const handleSize = 8;
+      ctx.fillStyle = '#3b82f6';
+      ctx.fillRect(cropX - handleSize/2, cropY - handleSize/2, handleSize, handleSize);
+      ctx.fillRect(cropX + cropSize - handleSize/2, cropY - handleSize/2, handleSize, handleSize);
+      ctx.fillRect(cropX - handleSize/2, cropY + cropSize - handleSize/2, handleSize, handleSize);
+      ctx.fillRect(cropX + cropSize - handleSize/2, cropY + cropSize - handleSize/2, handleSize, handleSize);
+    };
+
     drawCanvas();
   }, [image, cropArea, isDragging]);
 
