@@ -45,7 +45,7 @@ export default function Navbar({ currentUser }) {
 
   if (!currentUser) {
     return (
-      <div className="bg-white shadow p-4 flex justify-between items-center h-16">
+      <div className="bg-white shadow p-4 flex justify-between items-center h-16 w-full fixed top-0 left-0 right-0 z-50">
         <div
           onClick={() => navigate("/")}
           className="font-bold text-xl text-blue-600 cursor-pointer hover:text-blue-700 transition-colors"
@@ -80,7 +80,7 @@ export default function Navbar({ currentUser }) {
   };
 
   return (
-    <div className="bg-white shadow flex justify-between items-center h-16 px-2 sm:px-4 relative">
+    <div className="bg-white shadow flex justify-between items-center h-16 px-2 sm:px-4 relative w-full fixed top-0 left-0 right-0 z-50">
       {/* Left: Navigation links with vertical dividers */}
       <div className="flex h-full">
         <div
