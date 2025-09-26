@@ -136,10 +136,15 @@ export default function FriendsPage() {
                 userStatus: normalizedDetails.status || baseUser.userStatus || "OFFLINE",
                 // Use avatar from baseUser (friends data) since details API doesn't provide it
                 avatar: baseUser.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+                // Ensure isSender is properly set for pending status logic
+                isSender: normalizedDetails.senderId === currentUser?.id,
             };
 
             console.log("Debug - finalDetailUser.avatar:", finalDetailUser.avatar);
             console.log("Debug - finalDetailUser.username:", finalDetailUser.username);
+            console.log("Debug - finalDetailUser.isSender:", finalDetailUser.isSender);
+            console.log("Debug - finalDetailUser.senderId:", finalDetailUser.senderId);
+            console.log("Debug - currentUser.id:", currentUser?.id);
             setDetailUser(finalDetailUser);
         } catch (err) {
             // Handle error silently

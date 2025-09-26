@@ -13,6 +13,10 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
     if (!user) return;
     console.log("Debug - UserDetailsModal received user:", user);
     console.log("Debug - UserDetailsModal user.username:", user.username);
+    console.log("Debug - UserDetailsModal user.relationStatus:", user.relationStatus);
+    console.log("Debug - UserDetailsModal user.isSender:", user.isSender);
+    console.log("Debug - UserDetailsModal user.senderId:", user.senderId);
+    console.log("Debug - UserDetailsModal currentUser.id:", currentUser?.id);
     setLocalUser({
       ...user,
       otherUserId: user.otherUserId || user.id,
@@ -109,6 +113,10 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
     if (!localUser) return null;
 
     const status = localUser.relationStatus;
+    console.log("Debug - renderActions - status:", status);
+    console.log("Debug - renderActions - isSender:", localUser.isSender);
+    console.log("Debug - renderActions - senderId:", localUser.senderId);
+    console.log("Debug - renderActions - currentUser.id:", currentUser?.id);
 
     // Always show Start Chat button
     const startChatButton = (
