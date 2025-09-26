@@ -142,7 +142,9 @@ export default function ChatWindow({ currentUser, selectedChat }) {
         const formatted = (Array.isArray(res.data) ? res.data : []).map(msg => ({
           ...msg,
           senderName: msg.senderName || "Unknown",
-          senderAvatar: msg.senderAvatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+          senderAvatar: msg.senderAvatar 
+            ? (msg.senderAvatar.startsWith('http') ? msg.senderAvatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${msg.senderAvatar}`)
+            : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
           content: msg.deleted ? "This message was deleted" : (msg.content ?? ""),
           media: msg.deleted ? null : msg.media,
         }));
@@ -181,7 +183,9 @@ export default function ChatWindow({ currentUser, selectedChat }) {
           {
             ...incoming,
             senderName: incoming.senderName || incoming.senderUsername || "Unknown",
-            senderAvatar: incoming.senderAvatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+            senderAvatar: incoming.senderAvatar 
+              ? (incoming.senderAvatar.startsWith('http') ? incoming.senderAvatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${incoming.senderAvatar}`)
+              : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
           },
         ]);
         scrollToBottom();
@@ -295,7 +299,9 @@ export default function ChatWindow({ currentUser, selectedChat }) {
       media: uploadedFilename,
       type: messageType, // Backend expects 'type' not 'messageType'
       senderName: currentUser.fullName,
-      senderAvatar: currentUser.avatar,
+      senderAvatar: currentUser.avatar 
+        ? (currentUser.avatar.startsWith('http') ? currentUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${currentUser.avatar}`)
+        : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
     };
 
     try {
