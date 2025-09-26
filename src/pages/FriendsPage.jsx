@@ -119,10 +119,6 @@ export default function FriendsPage() {
                 // Keep the avatar from baseUser (friends data)
             };
 
-            console.log("Debug - baseUser.avatar:", baseUser.avatar);
-            console.log("Debug - details.avatar:", details.avatar);
-            console.log("Debug - details.username:", details.username);
-            console.log("Debug - normalizedDetails.username:", normalizedDetails.username);
 
             // Merge details with base user (keep relationStatus, senderId, etc.)
             const finalDetailUser = {
@@ -140,11 +136,6 @@ export default function FriendsPage() {
                 isSender: normalizedDetails.senderId === currentUser?.id,
             };
 
-            console.log("Debug - finalDetailUser.avatar:", finalDetailUser.avatar);
-            console.log("Debug - finalDetailUser.username:", finalDetailUser.username);
-            console.log("Debug - finalDetailUser.isSender:", finalDetailUser.isSender);
-            console.log("Debug - finalDetailUser.senderId:", finalDetailUser.senderId);
-            console.log("Debug - currentUser.id:", currentUser?.id);
             setDetailUser(finalDetailUser);
         } catch (err) {
             // Handle error silently

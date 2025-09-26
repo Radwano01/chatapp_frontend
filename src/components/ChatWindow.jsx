@@ -166,15 +166,9 @@ export default function ChatWindow({ currentUser, selectedChat }) {
     });
 
     const isGroup = selectedChat?.isGroup || (selectedChat?.members?.length || 0) > 2;
-    console.log("Debug - Subscription - selectedChat:", selectedChat);
-    console.log("Debug - Subscription - selectedChat.isGroup:", selectedChat?.isGroup);
-    console.log("Debug - Subscription - members length:", selectedChat?.members?.length);
-    console.log("Debug - Subscription - isGroup:", isGroup);
-    console.log("Debug - Subscription - chatId:", chatId);
     
     // Subscribe to messages
     const messageSub = subscribeToChat(chatId, (incoming) => {
-      console.log("Debug - Received message:", incoming);
       if (incoming.deleted && incoming.messageId) {
         setMessages(prev =>
           prev.map(m =>
@@ -312,17 +306,10 @@ export default function ChatWindow({ currentUser, selectedChat }) {
 
     try {
       const isGroup = selectedChat?.isGroup || (selectedChat.members?.length || 0) > 2;
-      console.log("Debug - selectedChat:", selectedChat);
-      console.log("Debug - selectedChat.isGroup:", selectedChat?.isGroup);
-      console.log("Debug - members length:", selectedChat.members?.length);
-      console.log("Debug - isGroup:", isGroup);
-      console.log("Debug - payload:", payload);
       
       if (isGroup) {
-        console.log("Debug - Sending group message");
         sendGroupMessage(payload);
       } else {
-        console.log("Debug - Sending direct message");
         sendChatMessage(payload);
       }
 

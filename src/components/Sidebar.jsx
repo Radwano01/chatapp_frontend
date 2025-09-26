@@ -158,7 +158,6 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
         status: details.status || chat.status || "OFFLINE",
       };
 
-      console.log("Debug - Sidebar openUserDetails - fresh data:", normalizedUser);
       setSelectedUser(normalizedUser);
     } catch (err) {
       console.error("Failed to fetch user details:", err);
