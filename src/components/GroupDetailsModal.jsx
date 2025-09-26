@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import ImagePreviewModal from "./ImagePreviewModal";
+import UserDetailsModal from "./UserDetailsModal";
 
 export default function GroupDetailsModal({ group, currentUser, onClose, onRemoveUser, onRefresh }) {
   const navigate = useNavigate();
   const [previewImage, setPreviewImage] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
   
   if (!group) return null;
 
@@ -14,6 +16,22 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
 
   const isOwner = currentUserRole === "OWNER";
   const isAdmin = currentUserRole === "ADMIN";
+
+  const handleViewUserDetails = (member) => {
+    // Normalize member data for UserDetailsModal
+    const normalizedUser = {
+      ...member,
+      otherUserId: member.id,
+      fullName: member.fullName || member.username || "Unknown User",
+      description: member.description || "No description",
+      avatar: member.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+      relationStatus: "ACCEPTED", // Assume group members are accepted
+      senderId: member.senderId || null,
+      isSender: member.senderId === currentUser?.id,
+      status: member.status || "OFFLINE",
+    };
+    setSelectedUser(normalizedUser);
+  };
 
   const handleRemove = async (userId) => {
     try {
@@ -184,6 +202,14 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
                 </div>
 
                 <div className="flex items-center space-x-2">
+                  {/* View Details button */}
+                  <button
+                    onClick={() => handleViewUserDetails(member)}
+                    className="text-blue-600 text-sm hover:underline"
+                  >
+                    View Details
+                  </button>
+
                   {/* Remove buttons */}
                   {isOwner && member.id !== currentUser.id && (
                     <button
@@ -255,6 +281,22 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
           imageUrl={previewImage}
           alt={group.name || "Group"}
           onClose={() => setPreviewImage(null)}
+        />
+      )}
+
+      {/* User Details Modal */}
+      {selectedUser && (
+        <UserDetailsModal
+          user={selectedUser}
+          currentUser={currentUser}
+          onClose={() => setSelectedUser(null)}
+          onSelectChat={(chat) => {
+            // Handle starting a chat with the selected user
+            navigate(`/chat/${chat.chatId}`, {
+              state: { selectedChat: chat }
+            });
+            setSelectedUser(null);
+          }}
         />
       )}
     </div>
