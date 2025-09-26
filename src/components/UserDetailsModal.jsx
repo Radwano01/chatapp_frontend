@@ -11,6 +11,8 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
   // Normalize relationStatus and maintain senderId
   useEffect(() => {
     if (!user) return;
+    console.log("Debug - UserDetailsModal received user:", user);
+    console.log("Debug - UserDetailsModal user.username:", user.username);
     setLocalUser({
       ...user,
       otherUserId: user.otherUserId || user.id,

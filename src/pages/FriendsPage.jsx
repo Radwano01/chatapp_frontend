@@ -121,6 +121,8 @@ export default function FriendsPage() {
 
             console.log("Debug - baseUser.avatar:", baseUser.avatar);
             console.log("Debug - details.avatar:", details.avatar);
+            console.log("Debug - details.username:", details.username);
+            console.log("Debug - normalizedDetails.username:", normalizedDetails.username);
 
             // Merge details with base user (keep relationStatus, senderId, etc.)
             const finalDetailUser = {
@@ -129,6 +131,7 @@ export default function FriendsPage() {
                 id: userId, // Ensure ID is set
                 otherUserId: userId, // Set otherUserId for consistency
                 fullName: normalizedDetails.fullName || baseUser.fullName || baseUser.username || "No Name",
+                username: normalizedDetails.username || baseUser.username || "unknown", // Ensure username is preserved
                 description: normalizedDetails.description || baseUser.description || "No description",
                 userStatus: normalizedDetails.status || baseUser.userStatus || "OFFLINE",
                 // Use avatar from baseUser (friends data) since details API doesn't provide it
@@ -136,6 +139,7 @@ export default function FriendsPage() {
             };
 
             console.log("Debug - finalDetailUser.avatar:", finalDetailUser.avatar);
+            console.log("Debug - finalDetailUser.username:", finalDetailUser.username);
             setDetailUser(finalDetailUser);
         } catch (err) {
             // Handle error silently
