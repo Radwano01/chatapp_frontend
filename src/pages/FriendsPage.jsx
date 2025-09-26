@@ -297,7 +297,7 @@ export default function FriendsPage() {
     }, [friends, pending, searchResult]);
 
     return (
-        <div className="p-2 sm:p-6 max-w-3xl mx-auto pt-28 sm:pt-20">
+        <div className="p-2 sm:p-6 max-w-3xl mx-auto pt-20">
             <button onClick={() => navigate("/")} className="mb-4 px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">← Back</button>
             <h1 className="text-xl sm:text-2xl font-bold mb-4">Friends</h1>
 

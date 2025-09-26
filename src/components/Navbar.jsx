@@ -68,11 +68,10 @@ export default function Navbar({ currentUser }) {
       <div
         onClick={() => !disabled && navigate(path)}
         className={`
-          flex items-center justify-center px-2 sm:px-6 py-2 sm:py-0 h-12 sm:h-full cursor-pointer transition-colors text-sm sm:text-base
+          flex items-center justify-center px-2 sm:px-6 h-full cursor-pointer transition-colors text-sm sm:text-base
           ${disabled ? "text-gray-400" : ""}
           ${!disabled ? "hover:bg-blue-600 hover:text-white" : ""}
           ${isActive ? "bg-blue-600 text-white font-bold" : "text-gray-700"}
-          border-b sm:border-b-0 border-gray-200 sm:border-none
         `}
       >
         {label}
@@ -81,12 +80,12 @@ export default function Navbar({ currentUser }) {
   };
 
   return (
-    <div className="bg-white shadow flex flex-col sm:flex-row justify-between items-center h-auto sm:h-16 px-2 sm:px-4 relative w-full fixed top-0 left-0 right-0 z-50">
-      {/* Top: Navigation links - Mobile: Stack vertically, Desktop: Horizontal */}
-      <div className="flex flex-col sm:flex-row w-full sm:w-auto h-full">
+    <div className="bg-white shadow flex justify-between items-center h-16 px-2 sm:px-4 relative w-full fixed top-0 left-0 right-0 z-50">
+      {/* Left: Navigation links with vertical dividers */}
+      <div className="flex h-full">
         <div
           onClick={() => navigate("/")}
-          className="flex items-center justify-center px-2 sm:px-6 py-2 sm:py-0 h-12 sm:h-full cursor-pointer transition-colors text-sm sm:text-base font-bold text-blue-600 hover:bg-blue-50 hover:text-blue-700 border-b sm:border-b-0 border-gray-200 sm:border-none"
+          className="flex items-center justify-center px-2 sm:px-6 h-full cursor-pointer transition-colors text-sm sm:text-base font-bold text-blue-600 hover:bg-blue-50 hover:text-blue-700"
         >
           ChatApp
         </div>
@@ -96,10 +95,10 @@ export default function Navbar({ currentUser }) {
       </div>
 
       {/* Right: Profile dropdown */}
-      <div className="relative w-full sm:w-auto border-t sm:border-t-0 border-gray-200 sm:border-none" ref={profileRef}>
+      <div className="relative" ref={profileRef}>
         <button
           onClick={() => setShowProfile(!showProfile)}
-          className="flex items-center justify-center sm:justify-start space-x-2 focus:outline-none relative h-12 sm:h-full w-full sm:w-auto py-2 sm:py-0"
+          className="flex items-center space-x-2 focus:outline-none relative h-full"
         >
           <div className="relative">
             <img
