@@ -165,8 +165,9 @@ export default function ChatWindow({ currentUser, selectedChat }) {
     connectToChat(chatId, currentUser.token, () => {
     });
 
-    const isGroup = (selectedChat?.members?.length || 0) > 2;
+    const isGroup = selectedChat?.isGroup || (selectedChat?.members?.length || 0) > 2;
     console.log("Debug - Subscription - selectedChat:", selectedChat);
+    console.log("Debug - Subscription - selectedChat.isGroup:", selectedChat?.isGroup);
     console.log("Debug - Subscription - members length:", selectedChat?.members?.length);
     console.log("Debug - Subscription - isGroup:", isGroup);
     console.log("Debug - Subscription - chatId:", chatId);
@@ -310,8 +311,9 @@ export default function ChatWindow({ currentUser, selectedChat }) {
     };
 
     try {
-      const isGroup = (selectedChat.members?.length || 0) > 2;
+      const isGroup = selectedChat?.isGroup || (selectedChat.members?.length || 0) > 2;
       console.log("Debug - selectedChat:", selectedChat);
+      console.log("Debug - selectedChat.isGroup:", selectedChat?.isGroup);
       console.log("Debug - members length:", selectedChat.members?.length);
       console.log("Debug - isGroup:", isGroup);
       console.log("Debug - payload:", payload);
