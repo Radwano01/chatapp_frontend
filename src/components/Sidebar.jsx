@@ -253,7 +253,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
                       : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                   }
                   alt={chat.fullName || chat.username || "avatar"}
-                  className="w-8 h-8 rounded mr-2 cursor-pointer hover:opacity-80 transition"
+                  className="w-8 h-8 rounded-full mr-2 cursor-pointer hover:opacity-80 transition"
                   onClick={(e) => {
                     e.stopPropagation();
                     const imageUrl = chat.avatar 
@@ -325,7 +325,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
                   <img
                     src={groupAvatar}
                     alt={g.name || "Group"}
-                    className="w-8 h-8 rounded mr-2 object-cover cursor-pointer hover:opacity-80 transition"
+                    className="w-8 h-8 rounded-full mr-2 object-cover cursor-pointer hover:opacity-80 transition"
                     onClick={(e) => {
                       e.stopPropagation();
                       setPreviewImage(groupAvatar);

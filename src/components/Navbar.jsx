@@ -2,9 +2,11 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../services/api";
 import { disconnectSocket } from "../services/socket";
+import ImagePreviewModal from "./ImagePreviewModal";
 
 export default function Navbar({ currentUser }) {
   const [showProfile, setShowProfile] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
   const profileRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation(); // for active page highlight
@@ -98,7 +100,16 @@ export default function Navbar({ currentUser }) {
                   : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
               }
               alt="profile"
-              className="w-10 h-10 rounded-full"
+              className="w-10 h-10 rounded-full cursor-pointer hover:opacity-80 transition"
+              onClick={(e) => {
+                e.stopPropagation();
+                const imageUrl = currentUser?.image || currentUser?.avatar
+                  ? ((currentUser.image || currentUser.avatar).startsWith('http') 
+                      ? (currentUser.image || currentUser.avatar)
+                      : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${currentUser.image || currentUser.avatar}`)
+                  : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg";
+                setPreviewImage(imageUrl);
+              }}
             />
             <span
               className={`absolute bottom-0 right-0 block w-3 h-3 rounded-full border-2 border-white ${
@@ -160,6 +171,15 @@ export default function Navbar({ currentUser }) {
           </div>
         )}
       </div>
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <ImagePreviewModal
+          imageUrl={previewImage}
+          alt="Profile Preview"
+          onClose={() => setPreviewImage(null)}
+        />
+      )}
     </div>
   );
 }

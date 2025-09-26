@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import ImagePreviewModal from "../components/ImagePreviewModal";
 
 export default function FriendsPage() {
     const [friends, setFriends] = useState([]);
@@ -9,6 +10,7 @@ export default function FriendsPage() {
     const [searchResult, setSearchResult] = useState(null);
     const [lastSearch, setLastSearch] = useState("");
     const [detailUser, setDetailUser] = useState(null);
+    const [previewImage, setPreviewImage] = useState(null);
     const navigate = useNavigate();
     
 
@@ -320,7 +322,14 @@ export default function FriendsPage() {
                                   : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                               } 
                               alt={friend.fullName} 
-                              className="w-10 h-10 rounded-full" 
+                              className="w-10 h-10 rounded-full cursor-pointer hover:opacity-80 transition" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const imageUrl = friend.avatar 
+                                  ? (friend.avatar.startsWith('http') ? friend.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${friend.avatar}`)
+                                  : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg";
+                                setPreviewImage(imageUrl);
+                              }}
                             />
                             <div>
                                 <div className="font-semibold">{friend.fullName}</div>
@@ -349,7 +358,14 @@ export default function FriendsPage() {
                               : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                           } 
                           alt={detailUser.fullName || detailUser.username || "User"} 
-                          className="w-24 h-24 rounded-full mx-auto mb-4 object-cover" 
+                          className="w-24 h-24 rounded-full mx-auto mb-4 object-cover cursor-pointer hover:opacity-80 transition" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const imageUrl = detailUser.avatar 
+                              ? (detailUser.avatar.startsWith('http') ? detailUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${detailUser.avatar}`)
+                              : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg";
+                            setPreviewImage(imageUrl);
+                          }}
                           onError={(e) => {
                             e.target.src = "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg";
                           }}
@@ -368,6 +384,15 @@ export default function FriendsPage() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Image Preview Modal */}
+            {previewImage && (
+                <ImagePreviewModal
+                    imageUrl={previewImage}
+                    alt="Friend Preview"
+                    onClose={() => setPreviewImage(null)}
+                />
             )}
         </div>
     );
