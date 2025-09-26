@@ -2,22 +2,22 @@ import api from "./api";
 
 export const MESSAGE_TYPES = {
   TEXT: "TEXT",
-  VOICE: "VOICE",
+  AUDIO: "AUDIO",
   IMAGE: "IMAGE",
   VIDEO: "VIDEO",
   FILE: "FILE",
 };
 
 /**
- * Infer backend UploadType (IMAGE|VIDEO|VOICE|FILE) from MIME type
+ * Infer backend UploadType (IMAGE|VIDEO|AUDIO|FILE) from MIME type
  * @param {File} file
- * @returns {"IMAGE"|"VIDEO"|"VOICE"|"FILE"}
+ * @returns {"IMAGE"|"VIDEO"|"AUDIO"|"FILE"}
  */
 export function inferBackendUploadType(file) {
   const mime = file?.type || "";
   if (mime.startsWith("image/")) return MESSAGE_TYPES.IMAGE;
   if (mime.startsWith("video/")) return MESSAGE_TYPES.VIDEO;
-  if (mime.startsWith("audio/")) return MESSAGE_TYPES.VOICE;
+  if (mime.startsWith("audio/")) return MESSAGE_TYPES.AUDIO;
   return MESSAGE_TYPES.FILE;
 }
 
@@ -25,7 +25,7 @@ export function inferBackendUploadType(file) {
  * Upload a file via POST /upload and return filename + messageType.
  * Backend returns plain string filename (S3 key) or { filename }.
  * @param {File} file
- * @param {"IMAGE"|"VIDEO"|"VOICE"|"FILE"} [explicitType]
+ * @param {"IMAGE"|"VIDEO"|"AUDIO"|"FILE"} [explicitType]
  * @param {(progress:number)=>void} [onProgress]
  */
 export async function uploadToBackend(file, explicitType, onProgress) {

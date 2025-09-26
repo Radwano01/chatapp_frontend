@@ -79,7 +79,7 @@ export default function AudioMessagePlayer({ src, duration }) {
   const progressPercentage = totalDuration > 0 ? (currentTime / totalDuration) * 100 : 0;
 
   return (
-    <div className="flex items-center bg-gray-100 rounded-lg p-3 mt-2 max-w-xs">
+    <div className="flex items-center bg-gray-100 rounded-lg p-3 max-w-xs">
       <audio ref={audioRef} src={src} preload="metadata" />
       
       {/* Play/Pause Button */}

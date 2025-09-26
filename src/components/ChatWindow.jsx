@@ -39,7 +39,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
     const lower = key.toLowerCase();
     if (lower.startsWith("images/") || /\.(png|jpe?g|gif|webp|svg)$/.test(lower)) return MESSAGE_TYPES.IMAGE;
     if (lower.startsWith("videos/") || /\.(mp4|webm|ogg|mov)$/.test(lower)) return MESSAGE_TYPES.VIDEO;
-    if (lower.startsWith("audio/") || /\.(mp3|wav|ogg|m4a|webm)$/.test(lower)) return MESSAGE_TYPES.VOICE;
+    if (lower.startsWith("audio/") || /\.(mp3|wav|ogg|m4a|webm)$/.test(lower)) return MESSAGE_TYPES.AUDIO;
     return MESSAGE_TYPES.FILE;
   };
 
@@ -334,7 +334,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
                 {msg.media && !msg.deleted && (() => {
                   const t = msg.messageType || inferTypeFromKey(msg.media);
                   if (t === MESSAGE_TYPES.VIDEO) return " 📹 User sent a video";
-                  if (t === MESSAGE_TYPES.VOICE) return " 🎤 Voice message";
+                  if (t === MESSAGE_TYPES.AUDIO) return " 🎤 Voice message";
                   if (t === MESSAGE_TYPES.IMAGE) return " 📷 Photo";
                   return "";
                 })()}
@@ -344,7 +344,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
                 const t = msg.messageType || inferTypeFromKey(msg.media);
                 if (t === MESSAGE_TYPES.IMAGE) return <img src={url} alt="media" className="max-w-[200px] sm:max-w-xs rounded mt-2 cursor-pointer hover:opacity-90 transition" onClick={() => setPreviewImage(url)} />;
                 if (t === MESSAGE_TYPES.VIDEO) return <VideoMessagePlayer src={url} />;
-                if (t === MESSAGE_TYPES.VOICE) return <AudioMessagePlayer src={url} duration={msg.duration} />;
+                if (t === MESSAGE_TYPES.AUDIO) return <AudioMessagePlayer src={url} duration={msg.duration} />;
                 return <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 underline break-all mt-2">{msg.media}</a>;
               })()}
             </div>
