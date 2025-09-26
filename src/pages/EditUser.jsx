@@ -93,7 +93,10 @@ export default function EditUser() {
         if (originalUser?.avatar || originalUser?.image) {
           const oldImageUrl = originalUser.avatar || originalUser.image;
           if (oldImageUrl && !oldImageUrl.includes('user-blue.jpg')) {
-            await deleteFromS3(oldImageUrl);
+            const deleteSuccess = await deleteFromS3(oldImageUrl);
+            if (!deleteSuccess) {
+              console.warn("Failed to delete previous avatar, but continuing with upload");
+            }
           }
         }
         

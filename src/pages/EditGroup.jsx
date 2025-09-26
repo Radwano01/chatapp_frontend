@@ -74,7 +74,10 @@ export default function EditGroupPage() {
         // Delete old group avatar from S3 if it exists and is not a default image
         if (originalData?.avatar) {
           if (originalData.avatar && !originalData.avatar.includes('user-group.png')) {
-            await deleteFromS3(originalData.avatar);
+            const deleteSuccess = await deleteFromS3(originalData.avatar);
+            if (!deleteSuccess) {
+              console.warn("Failed to delete previous group avatar, but continuing with upload");
+            }
           }
         }
         
