@@ -115,8 +115,11 @@ export default function FriendsPage() {
                 avatar: details.avatar ? (details.avatar.startsWith("http") ? details.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${details.avatar}`) : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
             };
 
+            console.log("Debug - details.avatar:", details.avatar);
+            console.log("Debug - normalizedDetails.avatar:", normalizedDetails.avatar);
+
             // Merge details with base user (keep relationStatus, senderId, etc.)
-            setDetailUser({
+            const finalDetailUser = {
                 ...baseUser,
                 ...normalizedDetails,
                 id: userId, // Ensure ID is set
@@ -124,8 +127,11 @@ export default function FriendsPage() {
                 fullName: normalizedDetails.fullName || baseUser.fullName || baseUser.username || "No Name",
                 description: normalizedDetails.description || baseUser.description || "No description",
                 userStatus: normalizedDetails.status || baseUser.userStatus || "OFFLINE",
-                avatar: normalizedDetails.avatar || baseUser.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
-            });
+                avatar: normalizedDetails.avatar, // Use the properly constructed avatar from normalizedDetails
+            };
+
+            console.log("Debug - finalDetailUser.avatar:", finalDetailUser.avatar);
+            setDetailUser(finalDetailUser);
         } catch (err) {
             // Handle error silently
         }
