@@ -293,7 +293,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
       recipientId,
       content: newMessage,
       media: uploadedFilename,
-      messageType,
+      type: messageType, // Backend expects 'type' not 'messageType'
       senderName: currentUser.fullName,
       senderAvatar: currentUser.avatar,
     };

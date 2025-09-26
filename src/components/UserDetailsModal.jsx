@@ -190,14 +190,14 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
           <img
             src={
               localUser.avatar 
-                ? (localUser.avatar.startsWith('http') ? localUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${localUser.avatar}`)
+                ? (localUser.avatar.startsWith('http') ? localUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${localUser.avatar}`)
                 : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
             }
             alt={localUser.fullName}
             className="w-12 h-12 rounded-full cursor-pointer hover:opacity-80 transition"
             onClick={() => {
               const imageUrl = localUser.avatar 
-                ? (localUser.avatar.startsWith('http') ? localUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${localUser.avatar}`)
+                ? (localUser.avatar.startsWith('http') ? localUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${localUser.avatar}`)
                 : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg";
               setPreviewImage(imageUrl);
             }}

@@ -24,7 +24,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
         otherUserId: c.otherUserId,
         fullName: c.fullName,
         avatar: c.avatar 
-          ? (c.avatar.startsWith('http') ? c.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${c.avatar}`)
+          ? (c.avatar.startsWith('http') ? c.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${c.avatar}`)
           : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
         description: c.description,
         status: c.status,
@@ -71,7 +71,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
           )
         );
       } catch (err) {
-        console.error("Failed to fetch user details for chat placeholder id=", id, err);
+        // Handle error silently
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -105,7 +105,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
         });
         setGroups(res.data || []);
       } catch (err) {
-        console.error("Error fetching groups:", err);
+        // Handle error silently
       }
     };
     if (currentUser?.token) {
@@ -115,16 +115,13 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
 
   // When user clicks a chat in the list
   const handleClickChat = (chat) => {
-    console.log("Sidebar handleClickChat - chat object:", chat);
-    console.log("Sidebar handleClickChat - chat.chatId:", chat.chatId);
-    
     const selected = {
       id: chat.id,
       chatId: chat.chatId,
       otherUserId: chat.otherUserId,
       fullName: chat.fullName,
       avatar: chat.avatar 
-        ? (chat.avatar.startsWith('http') ? chat.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${chat.avatar}`)
+        ? (chat.avatar.startsWith('http') ? chat.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${chat.avatar}`)
         : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
       description: chat.description,
       status: chat.status,
@@ -163,7 +160,6 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
       });
       return res.data;
     } catch (err) {
-      console.error("Failed to fetch group details:", err);
       alert("Failed to fetch group details ❌");
       return null;
     }
@@ -194,7 +190,6 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
 
   const removeUser = async (groupId, userId) => {
     if (!userId) {
-      console.error("No userId provided for removal");
       return;
     }
     
@@ -222,12 +217,6 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
       setGroups(res.data || []);
       
     } catch (err) {
-      console.error("Remove user failed:", err);
-      console.error("Error details:", {
-        status: err?.response?.status,
-        data: err?.response?.data,
-        message: err?.message
-      });
       alert(`Failed to remove user ❌\nError: ${err?.response?.data?.message || err?.message || 'Unknown error'}`);
     }
   };
@@ -309,7 +298,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
         ) : (
           (Array.isArray(groups) ? groups : []).map((g) => {
             const groupAvatar = g.avatar 
-              ? (g.avatar.startsWith('http') ? g.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${g.avatar}`)
+              ? (g.avatar.startsWith('http') ? g.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${g.avatar}`)
               : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-group.png";
             
             return (
@@ -342,7 +331,6 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
                       setPreviewImage(groupAvatar);
                     }}
                     onError={(e) => {
-                      console.error("Failed to load group image:", groupAvatar);
                       e.target.src = "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-group.png";
                     }}
                   />

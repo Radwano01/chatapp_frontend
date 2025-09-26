@@ -24,7 +24,7 @@ export default function FriendsPage() {
     const normalizeUser = useCallback((user) => ({
         id: user.id || null,
         username: user.username || "",
-        avatar: user.avatar ? (user.avatar.startsWith("http") ? user.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${user.avatar}`) : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+        avatar: user.avatar ? (user.avatar.startsWith("http") ? user.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${user.avatar}`) : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
         relationStatus: user.relationStatus || "NONE",
         senderId: user.senderId || null,
         isSender: currentUser?.id ? user.senderId === currentUser.id : false,
@@ -82,7 +82,7 @@ export default function FriendsPage() {
                 ...data,
                 fullName: data.fullName || data.username || "Unknown User",
                 description: data.description || "No description",
-                avatar: data.avatar ? (data.avatar.startsWith("http") ? data.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${data.avatar}`) : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
+                avatar: data.avatar ? (data.avatar.startsWith("http") ? data.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${data.avatar}`) : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
             };
 
             setSearchResult(normalizedData);
@@ -112,7 +112,7 @@ export default function FriendsPage() {
                 ...details,
                 fullName: details.fullName || details.username || "No Name",
                 description: details.description || "No description",
-                avatar: details.avatar ? (details.avatar.startsWith("http") ? details.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${details.avatar}`) : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
+                avatar: details.avatar ? (details.avatar.startsWith("http") ? details.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${details.avatar}`) : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
             };
 
             // Merge details with base user (keep relationStatus, senderId, etc.)
@@ -141,7 +141,7 @@ export default function FriendsPage() {
                 id: friendId,
                 username: searchResult?.username || "Unknown",
                 avatar: searchResult?.avatar 
-                  ? (searchResult.avatar.startsWith('http') ? searchResult.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${searchResult.avatar}`)
+                  ? (searchResult.avatar.startsWith('http') ? searchResult.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${searchResult.avatar}`)
                   : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
                 relationStatus: "PENDING",
                 senderId: currentUser.id, // ⚠️ only for *your* UI session
@@ -212,7 +212,7 @@ export default function FriendsPage() {
                 otherUserId: friend.id,
                 fullName: friend.fullName || friend.username,
                 avatar: friend.avatar 
-                  ? (friend.avatar.startsWith('http') ? friend.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${friend.avatar}`)
+                  ? (friend.avatar.startsWith('http') ? friend.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${friend.avatar}`)
                   : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
                 description: friend.description,
                 status: friend.status,
