@@ -48,7 +48,7 @@ export default function ChangePassword() {
     }
 
     // Symbol check
-    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
       score += 1;
       requirements.push("✓ Special character");
     } else {
