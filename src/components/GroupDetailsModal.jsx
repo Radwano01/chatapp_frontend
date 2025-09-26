@@ -103,7 +103,7 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
                   : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-group.png"
               }
               alt={group.name || "Group"}
-              className="w-12 h-12 rounded mr-3 object-cover cursor-pointer hover:opacity-80 transition"
+              className="w-12 h-12 rounded-full mr-3 object-cover cursor-pointer hover:opacity-80 transition"
               onClick={() => {
                 const imageUrl = group.avatar || group.image 
                   ? (group.avatar || group.image).startsWith('http') 
@@ -162,14 +162,21 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
               <li key={member.id} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <img
-                    src={member.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"}
+                    src={
+                      member.avatar 
+                        ? (member.avatar.startsWith('http') ? member.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${member.avatar}`)
+                        : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
+                    }
                     alt={member.fullName}
-                    className="w-8 h-8 rounded mr-2 cursor-pointer hover:opacity-80 transition"
+                    className="w-8 h-8 rounded-full mr-2 cursor-pointer hover:opacity-80 transition"
                     onClick={() => {
                       const imageUrl = member.avatar 
                         ? (member.avatar.startsWith('http') ? member.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${member.avatar}`)
                         : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg";
                       setPreviewImage(imageUrl);
+                    }}
+                    onError={(e) => {
+                      e.target.src = "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg";
                     }}
                   />
                   <span>{member.fullName}</span>
