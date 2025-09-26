@@ -79,67 +79,73 @@ export default function AudioMessagePlayer({ src, duration }) {
   const progressPercentage = totalDuration > 0 ? (currentTime / totalDuration) * 100 : 0;
 
   return (
-    <div className="flex items-center bg-gray-100 rounded-lg p-3 max-w-xs">
+    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 max-w-sm shadow-sm">
       <audio ref={audioRef} src={src} preload="metadata" />
       
-      {/* Play/Pause Button */}
-      <button
-        onClick={togglePlayPause}
-        disabled={isLoading}
-        className="flex-shrink-0 w-8 h-8 bg-blue-500 disabled:bg-gray-400 rounded-full flex items-center justify-center text-white"
-      >
-        {isLoading ? (
-          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-        ) : isPlaying ? (
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-          </svg>
-        ) : (
-          <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M8 5v14l11-7z"/>
-          </svg>
-        )}
-      </button>
-
-      {/* Progress Bar and Time */}
-      <div className="flex-1 ml-3 min-w-0">
-        <div
-          ref={progressRef}
-          onClick={handleProgressClick}
-          className="relative h-2 bg-gray-300 rounded-full cursor-pointer"
+      <div className="flex items-center space-x-3">
+        {/* Play/Pause Button */}
+        <button
+          onClick={togglePlayPause}
+          disabled={isLoading}
+          className="flex-shrink-0 w-10 h-10 bg-blue-500 disabled:bg-gray-400 rounded-full flex items-center justify-center text-white shadow-md"
         >
-          <div
-            className="absolute top-0 left-0 h-full bg-blue-500 rounded-full transition-all"
-            style={{ width: `${progressPercentage}%` }}
-          />
-          <div
-            className="absolute top-1/2 transform -translate-y-1/2 w-3 h-3 bg-blue-500 rounded-full shadow-md transition-all"
-            style={{ left: `calc(${progressPercentage}% - 6px)` }}
-          />
-        </div>
-        
-        <div className="flex justify-between text-xs text-gray-600 mt-1">
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(totalDuration)}</span>
-        </div>
-      </div>
+          {isLoading ? (
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          ) : isPlaying ? (
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+            </svg>
+          ) : (
+            <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          )}
+        </button>
 
-      {/* Waveform Visual (Simple bars) */}
-      <div className="flex items-center space-x-0.5 ml-2">
-        {Array.from({ length: 20 }, (_, i) => (
+        {/* Audio Info */}
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-medium text-gray-800 mb-1">🎤 Voice Message</div>
+          
+          {/* Progress Bar */}
           <div
-            key={i}
-            className={`w-0.5 bg-gray-400 rounded-full transition-all duration-100 ${
-              isPlaying && (i % 4 === 0 || Math.random() > 0.7)
-                ? 'bg-blue-500 h-3'
-                : 'h-1'
-            }`}
-            style={{
-              animationDelay: `${i * 50}ms`,
-              animation: isPlaying ? 'pulse 1s infinite' : 'none'
-            }}
-          />
-        ))}
+            ref={progressRef}
+            onClick={handleProgressClick}
+            className="relative h-2 bg-gray-200 rounded-full cursor-pointer mb-1"
+          >
+            <div
+              className="absolute top-0 left-0 h-full bg-blue-500 rounded-full"
+              style={{ width: `${progressPercentage}%` }}
+            />
+            <div
+              className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-blue-500 rounded-full shadow-lg"
+              style={{ left: `calc(${progressPercentage}% - 8px)` }}
+            />
+          </div>
+          
+          {/* Time Display */}
+          <div className="flex justify-between text-xs text-gray-600">
+            <span>{formatTime(currentTime)}</span>
+            <span>{formatTime(totalDuration)}</span>
+          </div>
+        </div>
+
+        {/* Waveform Visual */}
+        <div className="flex items-center space-x-1">
+          {Array.from({ length: 15 }, (_, i) => (
+            <div
+              key={i}
+              className={`w-1 bg-gray-300 rounded-full ${
+                isPlaying && (i % 3 === 0 || Math.random() > 0.6)
+                  ? 'bg-blue-500 h-4'
+                  : 'h-2'
+              }`}
+              style={{
+                animationDelay: `${i * 100}ms`,
+                animation: isPlaying ? 'pulse 1.5s infinite' : 'none'
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

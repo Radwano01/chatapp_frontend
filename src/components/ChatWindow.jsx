@@ -333,14 +333,6 @@ export default function ChatWindow({ currentUser, selectedChat }) {
                 {msg.deleted ? "This message was deleted" : msg.content}
                 {msg.media && !msg.deleted && (() => {
                   const t = msg.messageType || inferTypeFromKey(msg.media);
-                  console.log('Debug - Message type detection:', {
-                    messageType: msg.messageType,
-                    inferredType: inferTypeFromKey(msg.media),
-                    finalType: t,
-                    media: msg.media,
-                    isVideo: t === MESSAGE_TYPES.VIDEO,
-                    isAudio: t === MESSAGE_TYPES.AUDIO
-                  });
                   if (t === MESSAGE_TYPES.VIDEO) return " 📹 User sent a video";
                   if (t === MESSAGE_TYPES.AUDIO) return " 🎤 Voice message";
                   if (t === MESSAGE_TYPES.IMAGE) return " 📷 Photo";
@@ -373,14 +365,14 @@ export default function ChatWindow({ currentUser, selectedChat }) {
           onChange={handleInputChange}
           placeholder="Type a message..."
           className="flex-1 px-2 sm:px-3 py-2 border rounded text-sm sm:text-base"
-          disabled={isRecording} // Only disabled when actively recording
+          disabled={isRecording || mediaFile} // Disabled if recording or a file is selected
         />
         <div className="flex gap-2">
           <input
             type="file"
             onChange={handleFileChange}
             className="hidden"
-            disabled={isRecording}
+            disabled={isRecording || mediaFile}
             id="file-input"
           />
           <label
