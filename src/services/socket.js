@@ -80,21 +80,32 @@ function _subscribe(chatId, callback, isGroup, fromQueue = false) {
     ? `/topic/chatroom/${chatId}`
     : `/user/queue/chatroom/${chatId}`;
 
+  console.log("Debug - _subscribe called");
+  console.log("Debug - chatId:", chatId);
+  console.log("Debug - isGroup:", isGroup);
+  console.log("Debug - destination:", destination);
+  console.log("Debug - stompClient connected:", stompClient?.connected);
+
   if (!stompClient) {
+    console.log("Debug - No stompClient available");
     return;
   }
 
   if (!stompClient.connected && !fromQueue) {
+    console.log("Debug - StompClient not connected, queuing subscription");
     pendingSubscriptions.push({ chatId, callback, isGroup });
     return;
   }
 
   try {
+    console.log("Debug - Subscribing to:", destination);
     const subscription = stompClient.subscribe(destination, (message) => {
+      console.log("Debug - Received message on subscription:", message.body);
       callback(JSON.parse(message.body));
     });
     return subscription;
   } catch (error) {
+    console.error("Debug - Error subscribing:", error);
     pendingSubscriptions.push({ chatId, callback, isGroup });
     return null;
   }
@@ -129,13 +140,21 @@ export function sendChatMessage(message) {
 export function sendGroupMessage(message) {
   const destination = "/app/chat.group";
   const body = JSON.stringify(message);
+  
+  console.log("Debug - sendGroupMessage called");
+  console.log("Debug - destination:", destination);
+  console.log("Debug - message:", message);
+  console.log("Debug - stompClient connected:", stompClient?.connected);
 
   if (stompClient?.connected) {
     try {
+      console.log("Debug - Publishing group message");
       stompClient.publish({ destination, body });
     } catch (error) {
+      console.error("Debug - Error publishing group message:", error);
     }
   } else {
+    console.log("Debug - StompClient not connected, queuing message");
     pendingMessages.push({ destination, body });
   }
 }
