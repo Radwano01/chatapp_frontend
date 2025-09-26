@@ -222,7 +222,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
       if (typingSub) typingSub.unsubscribe();
       disconnectFromChat();
     };
-  }, [chatId, currentUser.id, currentUser.token, selectedChat?.members?.length]);
+  }, [chatId, currentUser.id, currentUser.token, selectedChat]);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
