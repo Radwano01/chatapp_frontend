@@ -86,7 +86,7 @@ export default function AudioMessagePlayer({ src, duration }) {
       <button
         onClick={togglePlayPause}
         disabled={isLoading}
-        className="flex-shrink-0 w-8 h-8 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 rounded-full flex items-center justify-center text-white transition-colors"
+        className="flex-shrink-0 w-8 h-8 bg-blue-500 disabled:bg-gray-400 rounded-full flex items-center justify-center text-white"
       >
         {isLoading ? (
           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -106,7 +106,7 @@ export default function AudioMessagePlayer({ src, duration }) {
         <div
           ref={progressRef}
           onClick={handleProgressClick}
-          className="relative h-2 bg-gray-300 rounded-full cursor-pointer hover:h-3 transition-all"
+          className="relative h-2 bg-gray-300 rounded-full cursor-pointer"
         >
           <div
             className="absolute top-0 left-0 h-full bg-blue-500 rounded-full transition-all"

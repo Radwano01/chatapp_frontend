@@ -333,6 +333,14 @@ export default function ChatWindow({ currentUser, selectedChat }) {
                 {msg.deleted ? "This message was deleted" : msg.content}
                 {msg.media && !msg.deleted && (() => {
                   const t = msg.messageType || inferTypeFromKey(msg.media);
+                  console.log('Debug - Message type detection:', {
+                    messageType: msg.messageType,
+                    inferredType: inferTypeFromKey(msg.media),
+                    finalType: t,
+                    media: msg.media,
+                    isVideo: t === MESSAGE_TYPES.VIDEO,
+                    isAudio: t === MESSAGE_TYPES.AUDIO
+                  });
                   if (t === MESSAGE_TYPES.VIDEO) return " 📹 User sent a video";
                   if (t === MESSAGE_TYPES.AUDIO) return " 🎤 Voice message";
                   if (t === MESSAGE_TYPES.IMAGE) return " 📷 Photo";
