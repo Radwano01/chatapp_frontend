@@ -99,8 +99,8 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white w-[500px] max-w-[90vw] h-[600px] max-h-[85vh] rounded shadow-lg p-6 relative overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4">
+      <div className="bg-white w-full max-w-sm sm:max-w-md md:max-w-lg h-[80vh] sm:h-[600px] rounded shadow-lg p-4 sm:p-6 relative overflow-y-auto">
         {/* Close button */}
         <button
           onClick={onClose}
@@ -121,7 +121,7 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
                   : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-group.png"
               }
               alt={group.name || "Group"}
-              className="w-12 h-12 rounded-full mr-3 object-cover cursor-pointer hover:opacity-80 transition"
+              className="w-8 h-8 sm:w-12 sm:h-12 rounded-full mr-2 sm:mr-3 object-cover cursor-pointer hover:opacity-80 transition"
               onClick={() => {
                 const imageUrl = group.avatar || group.image 
                   ? (group.avatar || group.image).startsWith('http') 
@@ -136,8 +136,8 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
               }}
             />
             <div>
-              <h2 className="font-bold text-lg">{group.name || "Unnamed Group"}</h2>
-              {group.description && <p className="text-sm text-gray-500">{group.description}</p>}
+              <h2 className="font-bold text-base sm:text-lg">{group.name || "Unnamed Group"}</h2>
+              {group.description && <p className="text-xs sm:text-sm text-gray-500">{group.description}</p>}
               {(group.createdAt || group.timestamp) && (
                 <p className="text-xs text-gray-400 mt-1">
                   Created: {new Date(group.createdAt || group.timestamp).toLocaleString()}
@@ -186,7 +186,7 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
                         : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                     }
                     alt={member.fullName}
-                    className="w-8 h-8 rounded-full mr-2 cursor-pointer hover:opacity-80 transition"
+                    className="w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2 cursor-pointer hover:opacity-80 transition"
                     onClick={() => {
                       const imageUrl = member.avatar 
                         ? (member.avatar.startsWith('http') ? member.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${member.avatar}`)
@@ -197,7 +197,7 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
                       e.target.src = "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg";
                     }}
                   />
-                  <span>{member.fullName}</span>
+                  <span className="text-xs sm:text-sm">{member.fullName}</span>
                   <span className="ml-2 text-xs text-gray-500">{memberRole}</span>
                 </div>
 
@@ -205,7 +205,7 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
                   {/* View Details button */}
                   <button
                     onClick={() => handleViewUserDetails(member)}
-                    className="text-blue-600 text-sm hover:underline"
+                    className="text-blue-600 text-xs sm:text-sm hover:underline"
                   >
                     View Details
                   </button>

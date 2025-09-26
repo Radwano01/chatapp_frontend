@@ -404,29 +404,29 @@ export default function ChatWindow({ currentUser, selectedChat }) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
+      <div className="flex-1 overflow-y-auto p-2 sm:p-4 bg-gray-100">
         {(Array.isArray(messages) ? messages : []).map((msg, index) => (
           <div key={msg.id || index} className={`flex ${msg.senderId === currentUser.id ? "justify-end" : "justify-start"} mb-1`}>
-            <div className={`p-2 rounded ${msg.deleted ? "bg-gray-200 text-gray-600" : (msg.senderId === currentUser.id ? "bg-blue-500 text-white" : "bg-white")}`}>
+            <div className={`p-2 rounded max-w-xs sm:max-w-md ${msg.deleted ? "bg-gray-200 text-gray-600" : (msg.senderId === currentUser.id ? "bg-blue-500 text-white" : "bg-white")}`}>
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
                   <img 
                     src={msg.senderAvatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"} 
                     alt="avatar" 
-                    className="w-6 h-6 rounded-full" 
+                    className="w-4 h-4 sm:w-6 sm:h-6 rounded-full" 
                   />
-                  <span className="font-semibold text-sm">{msg.senderName}</span>
+                  <span className="font-semibold text-xs sm:text-sm">{msg.senderName}</span>
                 </div>
                 {!msg.deleted && msg.senderId === currentUser.id && (
                   <button className="ml-2 text-red-500 hover:text-red-700" onClick={() => handleDelete(msg.id)}>🗑</button>
                 )}
               </div>
-              <span className={msg.deleted ? "italic text-gray-500" : ""}>{msg.deleted ? "This message was deleted" : msg.content}</span>
+              <span className={`text-xs sm:text-sm ${msg.deleted ? "italic text-gray-500" : ""}`}>{msg.deleted ? "This message was deleted" : msg.content}</span>
               {msg.media && !msg.deleted && (() => {
                 const url = buildMediaUrl(msg.media);
                 const t = msg.messageType || inferTypeFromKey(msg.media);
-                if (t === MESSAGE_TYPES.IMAGE) return <img src={url} alt="media" className="max-w-xs rounded mt-2" />;
-                if (t === MESSAGE_TYPES.VIDEO) return <video src={url} className="max-w-xs rounded mt-2" controls preload="metadata" />;
+                if (t === MESSAGE_TYPES.IMAGE) return <img src={url} alt="media" className="max-w-[200px] sm:max-w-xs rounded mt-2" />;
+                if (t === MESSAGE_TYPES.VIDEO) return <video src={url} className="max-w-[200px] sm:max-w-xs rounded mt-2" controls preload="metadata" />;
                 if (t === MESSAGE_TYPES.VOICE) return <AudioMessagePlayer src={url} />;
                 return <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 underline break-all mt-2">{msg.media}</a>;
               })()}
@@ -441,50 +441,59 @@ export default function ChatWindow({ currentUser, selectedChat }) {
         )}
       </div>
 
-      <form onSubmit={handleSend} className="flex p-2 border-t bg-white">
+      <form onSubmit={handleSend} className="flex flex-col sm:flex-row p-2 border-t bg-white gap-2">
         <input
           type="text"
           value={newMessage}
           onChange={handleInputChange}
           placeholder="Type a message..."
-          className="flex-1 px-3 py-2 border rounded mr-2"
+          className="flex-1 px-2 sm:px-3 py-2 border rounded text-sm sm:text-base"
           disabled={isRecording || (mediaFile && mediaFile.type?.startsWith("audio/"))} // Disabled if recording or audio ready
         />
-        <input
-          type="file"
-          onChange={handleFileChange}
-          className="mr-2"
-          disabled={isRecording || (mediaFile && mediaFile.type?.startsWith("audio/"))}
-        />
-        {isUploading && (
-          <div className="flex items-center mr-2 text-sm text-gray-600 w-24">
-            <div className="w-full bg-gray-200 rounded h-2">
-              <div className="bg-blue-600 h-2 rounded" style={{ width: `${uploadProgress}%` }}></div>
+        <div className="flex gap-2">
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="hidden"
+            disabled={isRecording || (mediaFile && mediaFile.type?.startsWith("audio/"))}
+            id="file-input"
+          />
+          <label
+            htmlFor="file-input"
+            className="px-2 sm:px-3 py-2 bg-gray-200 rounded text-xs sm:text-sm cursor-pointer hover:bg-gray-300"
+          >
+            📎
+          </label>
+          {isUploading && (
+            <div className="flex items-center text-xs sm:text-sm text-gray-600 w-16 sm:w-24">
+              <div className="w-full bg-gray-200 rounded h-2">
+                <div className="bg-blue-600 h-2 rounded" style={{ width: `${uploadProgress}%` }}></div>
+              </div>
             </div>
-          </div>
-        )}
-        <button
-          type="button"
-          onClick={isRecording ? stopRecording : startRecording}
-          className={`mr-2 px-3 py-2 rounded ${isRecording ? "bg-red-600 text-white" : "bg-gray-200"}`}
-          title={isRecording ? "Stop Recording" : "Record Voice"}
-        >
-          {isRecording ? "Stop" : "Rec"}
-        </button>
-        {mediaFile && mediaFile.type?.startsWith("audio/") && (
-          <div className="flex items-center gap-2 mr-2 text-xs text-gray-700">
-            <span className="px-2 py-1 bg-gray-200 rounded">Recorded audio ready</span>
-            <button
-              type="button"
-              onClick={() => setMediaFile(null)}
-              className="px-2 py-1 rounded bg-gray-300 hover:bg-gray-400"
-              title="Delete recorded audio"
-            >
-              Delete Rec
-            </button>
-          </div>
-        )}
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Send</button>
+          )}
+          <button
+            type="button"
+            onClick={isRecording ? stopRecording : startRecording}
+            className={`px-2 sm:px-3 py-2 rounded text-xs sm:text-sm ${isRecording ? "bg-red-600 text-white" : "bg-gray-200"}`}
+            title={isRecording ? "Stop Recording" : "Record Voice"}
+          >
+            {isRecording ? "Stop" : "Rec"}
+          </button>
+          {mediaFile && mediaFile.type?.startsWith("audio/") && (
+            <div className="flex items-center gap-2 text-xs text-gray-700">
+              <span className="px-2 py-1 bg-gray-200 rounded">Audio ready</span>
+              <button
+                type="button"
+                onClick={() => setMediaFile(null)}
+                className="px-2 py-1 rounded bg-gray-300 hover:bg-gray-400 text-xs"
+                title="Delete recorded audio"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+          <button type="submit" className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded text-xs sm:text-sm">Send</button>
+        </div>
       </form>
     </div>
   );

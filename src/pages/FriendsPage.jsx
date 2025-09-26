@@ -296,24 +296,24 @@ export default function FriendsPage() {
     }, [friends, pending, searchResult]);
 
     return (
-        <div className="p-6 max-w-3xl mx-auto">
+        <div className="p-2 sm:p-6 max-w-3xl mx-auto">
             <button onClick={() => navigate("/")} className="mb-4 px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">← Back</button>
-            <h1 className="text-2xl font-bold mb-4">Friends</h1>
+            <h1 className="text-xl sm:text-2xl font-bold mb-4">Friends</h1>
 
-            <div className="flex mb-6 space-x-2">
+            <div className="flex flex-col sm:flex-row mb-6 space-y-2 sm:space-y-0 sm:space-x-2">
                 <input
                     type="text"
                     placeholder="Search users..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                 />
-                <button onClick={handleFindFriend} className="bg-blue-600 text-white px-4 rounded hover:bg-blue-700">Find</button>
+                <button onClick={handleFindFriend} className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded hover:bg-blue-700 text-sm sm:text-base">Find</button>
             </div>
 
             <ul className="space-y-2">
                 {allFriendsToShow.length > 0 ? (Array.isArray(allFriendsToShow) ? allFriendsToShow : []).map(friend => (
-                    <li key={friend.id} className={`flex items-center justify-between p-3 rounded shadow-sm ${searchResult?.id === friend.id ? "bg-yellow-100 border border-yellow-400" : "bg-gray-50"}`}>
+                    <li key={friend.id} className={`flex items-center justify-between p-2 sm:p-3 rounded shadow-sm ${searchResult?.id === friend.id ? "bg-yellow-100 border border-yellow-400" : "bg-gray-50"}`}>
                         <div className="flex items-center space-x-3">
                             <img 
                               src={
@@ -322,7 +322,7 @@ export default function FriendsPage() {
                                   : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                               } 
                               alt={friend.fullName} 
-                              className="w-10 h-10 rounded-full cursor-pointer hover:opacity-80 transition" 
+                              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full cursor-pointer hover:opacity-80 transition" 
                               onClick={(e) => {
                                 e.stopPropagation();
                                 const imageUrl = friend.avatar 
@@ -332,11 +332,11 @@ export default function FriendsPage() {
                               }}
                             />
                             <div>
-                                <div className="font-semibold">{friend.fullName}</div>
+                                <div className="font-semibold text-sm sm:text-base">{friend.fullName}</div>
                             </div>
                         </div>
                         <div className="flex flex-col items-end gap-2">
-                            <button onClick={() => handleViewDetails(friend.id)} className="bg-yellow-500 text-white px-2 py-1 rounded">View Details</button>
+                            <button onClick={() => handleViewDetails(friend.id)} className="bg-yellow-500 text-white px-2 py-1 rounded text-xs sm:text-sm">View Details</button>
                             {renderFriendActions(friend)}
                         </div>
                     </li>

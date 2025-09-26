@@ -63,7 +63,7 @@ export default function Navbar({ currentUser }) {
       <div
         onClick={() => !disabled && navigate(path)}
         className={`
-          flex items-center justify-center px-6 h-full cursor-pointer transition-colors
+          flex items-center justify-center px-2 sm:px-6 h-full cursor-pointer transition-colors text-sm sm:text-base
           ${disabled ? "text-gray-400" : ""}
           ${!disabled ? "hover:bg-blue-600 hover:text-white" : ""}
           ${isActive ? "bg-blue-600 text-white font-bold" : "text-gray-700"}
@@ -75,13 +75,13 @@ export default function Navbar({ currentUser }) {
   };
 
   return (
-    <div className="bg-white shadow flex justify-between items-center h-16 px-4 relative">
+    <div className="bg-white shadow flex justify-between items-center h-16 px-2 sm:px-4 relative">
       {/* Left: Navigation links with vertical dividers */}
       <div className="flex h-full">
         <NavLink label="ChatApp" path="/" />
-        <div className="border-l border-gray-300 h-full"></div>
+        <div className="border-l border-gray-300 h-full hidden sm:block"></div>
         <NavLink label="Friends" path="/friends" />
-        <div className="border-l border-gray-300 h-full"></div>
+        <div className="border-l border-gray-300 h-full hidden sm:block"></div>
       </div>
 
       {/* Right: Profile dropdown */}
@@ -100,7 +100,7 @@ export default function Navbar({ currentUser }) {
                   : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
               }
               alt="profile"
-              className="w-10 h-10 rounded-full cursor-pointer hover:opacity-80 transition"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full cursor-pointer hover:opacity-80 transition"
               onClick={(e) => {
                 e.stopPropagation();
                 const imageUrl = currentUser?.image || currentUser?.avatar
@@ -123,7 +123,7 @@ export default function Navbar({ currentUser }) {
         </button>
 
         {showProfile && (
-          <div className="absolute right-0 mt-2 w-56 bg-white shadow-lg z-50 p-4 flex flex-col space-y-2">
+          <div className="absolute right-0 mt-2 w-48 sm:w-56 bg-white shadow-lg z-50 p-3 sm:p-4 flex flex-col space-y-2">
             <div className="text-center relative">
               <img
                 src={
@@ -134,7 +134,7 @@ export default function Navbar({ currentUser }) {
                     : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                 }
                 alt="profile"
-                className="w-16 h-16 rounded-full mx-auto mb-2"
+                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full mx-auto mb-2"
               />
               <span
                 className={`absolute bottom-1 right-1 block w-3 h-3 rounded-full border-2 border-white ${
@@ -143,12 +143,12 @@ export default function Navbar({ currentUser }) {
                     : "bg-gray-400"
                 }`}
               ></span>
-              <div className="font-bold">{currentUser?.fullName}</div>
+              <div className="font-bold text-sm sm:text-base">{currentUser?.fullName}</div>
             </div>
 
             <button
               onClick={() => navigate(`/users/${currentUser?.id}/edit`)}
-              className="bg-blue-600 text-white px-3 py-1"
+              className="bg-blue-600 text-white px-3 py-1 text-sm sm:text-base"
             >
               Edit Profile
             </button>
@@ -157,14 +157,14 @@ export default function Navbar({ currentUser }) {
               onClick={() =>
                 navigate(`/users/${currentUser?.id}/change-password`)
               }
-              className="bg-yellow-500 text-white px-3 py-1"
+              className="bg-yellow-500 text-white px-3 py-1 text-sm sm:text-base"
             >
               Change Password
             </button>
 
             <button
               onClick={handleLogout}
-              className="bg-red-600 text-white px-3 py-1"
+              className="bg-red-600 text-white px-3 py-1 text-sm sm:text-base"
             >
               Logout
             </button>

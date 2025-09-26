@@ -112,7 +112,7 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
     const startChatButton = (
       <button
         onClick={handleStartChat}
-        className="bg-blue-500 text-white px-3 py-1 rounded"
+        className="bg-blue-500 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm"
       >
         Start Chat
       </button>
@@ -184,8 +184,8 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
   if (!localUser) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-lg w-96">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white p-4 sm:p-6 rounded shadow-lg w-full max-w-sm sm:max-w-md">
         <div className="flex items-center space-x-3 mb-4">
           <img
             src={
@@ -194,7 +194,7 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
                 : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
             }
             alt={localUser.fullName}
-            className="w-12 h-12 rounded-full cursor-pointer hover:opacity-80 transition"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full cursor-pointer hover:opacity-80 transition"
             onClick={() => {
               const imageUrl = localUser.avatar 
                 ? (localUser.avatar.startsWith('http') ? localUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${localUser.avatar}`)
@@ -203,9 +203,9 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
             }}
           />
           <div>
-            <h2 className="text-xl font-bold">{localUser.fullName}</h2>
-            <p className="text-gray-600">@{localUser.username}</p>
-            <p className="text-gray-500">{localUser.description || "No description"}</p>
+          <h2 className="text-lg sm:text-xl font-bold">{localUser.fullName}</h2>
+          <p className="text-sm sm:text-base text-gray-600">@{localUser.username}</p>
+            <p className="text-xs sm:text-sm text-gray-500">{localUser.description || "No description"}</p>
           </div>
         </div>
 

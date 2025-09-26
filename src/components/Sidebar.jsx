@@ -222,7 +222,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
   };
 
   return (
-    <div className="w-72 bg-gray-50 h-screen border-r overflow-y-auto p-3">
+    <div className="w-full sm:w-72 bg-gray-50 h-screen border-r overflow-y-auto p-2 sm:p-3">
       <button
         onClick={() => navigate("/groups/create")}
         className="w-full bg-purple-600 text-white py-2 rounded mb-4 hover:bg-purple-700 transition"
@@ -232,10 +232,10 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
 
       {/* Private Chats */}
       <div>
-        <h3 className="text-gray-700 font-bold mb-2">Chats</h3>
+        <h3 className="text-gray-700 font-bold mb-2 text-sm sm:text-base">Chats</h3>
 
         {localChats.length === 0 ? (
-          <p className="text-gray-500 text-sm">No chats yet</p>
+          <p className="text-gray-500 text-xs sm:text-sm">No chats yet</p>
         ) : (
           (Array.isArray(localChats) ? localChats : []).map((chat) => (
             <div
@@ -253,7 +253,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
                       : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                   }
                   alt={chat.fullName || chat.username || "avatar"}
-                  className="w-8 h-8 rounded-full mr-2 cursor-pointer hover:opacity-80 transition"
+                  className="w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2 cursor-pointer hover:opacity-80 transition"
                   onClick={(e) => {
                     e.stopPropagation();
                     const imageUrl = chat.avatar 
@@ -263,10 +263,10 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
                   }}
                 />
                 <div className="flex flex-col">
-                  <span className="font-medium">
+                  <span className="font-medium text-sm sm:text-base">
                     {chat.fullName || chat.username || "Unknown User"}
                   </span>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-xs sm:text-sm text-gray-500">
                     {chat.username ? `@${chat.username}` : ""}
                   </span>
                 </div>
@@ -285,7 +285,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
 
       {/* Groups */}
       <div className="mt-4">
-        <h3 className="text-gray-700 font-bold mb-2">Groups</h3>
+        <h3 className="text-gray-700 font-bold mb-2 text-sm sm:text-base">Groups</h3>
         {groups.length === 0 ? (
           <div className="text-center py-4">
             <img
@@ -293,7 +293,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
               alt="No groups"
               className="w-12 h-12 mx-auto mb-2 opacity-50"
             />
-            <p className="text-gray-500 text-sm">No groups yet</p>
+            <p className="text-gray-500 text-xs sm:text-sm">No groups yet</p>
           </div>
         ) : (
           (Array.isArray(groups) ? groups : []).map((g) => {
@@ -325,7 +325,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
                   <img
                     src={groupAvatar}
                     alt={g.name || "Group"}
-                    className="w-8 h-8 rounded-full mr-2 object-cover cursor-pointer hover:opacity-80 transition"
+                    className="w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2 object-cover cursor-pointer hover:opacity-80 transition"
                     onClick={(e) => {
                       e.stopPropagation();
                       setPreviewImage(groupAvatar);
@@ -335,7 +335,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
                     }}
                   />
                   <div>
-                    <p className="font-bold">{g.name || "Unnamed Group"}</p>
+                    <p className="font-bold text-sm sm:text-base">{g.name || "Unnamed Group"}</p>
                     {g.description && (
                       <p className="text-xs text-gray-500">{g.description}</p>
                     )}

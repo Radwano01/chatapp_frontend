@@ -74,7 +74,7 @@ export default function ChatPage() {
   }, []);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex flex-col sm:flex-row h-screen">
       <Sidebar
         currentUser={currentUser}
         users={users}
