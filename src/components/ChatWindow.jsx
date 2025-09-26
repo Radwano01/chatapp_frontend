@@ -4,6 +4,7 @@ import { uploadToBackend, MESSAGE_TYPES } from "../services/upload";
 import api from "../services/api";
 import ImagePreviewModal from "./ImagePreviewModal";
 import AudioMessagePlayer from "./AudioMessagePlayer";
+import VideoMessagePlayer from "./VideoMessagePlayer";
 
 export default function ChatWindow({ currentUser, selectedChat }) {
   const [messages, setMessages] = useState([]);
@@ -415,12 +416,21 @@ export default function ChatWindow({ currentUser, selectedChat }) {
                   <button className="ml-2 text-red-500 hover:text-red-700" onClick={() => handleDelete(msg.id)}>🗑</button>
                 )}
               </div>
-              <span className={`text-xs sm:text-sm ${msg.deleted ? "italic text-gray-500" : ""}`}>{msg.deleted ? "This message was deleted" : msg.content}</span>
+              <span className={`text-xs sm:text-sm ${msg.deleted ? "italic text-gray-500" : ""}`}>
+                {msg.deleted ? "This message was deleted" : msg.content}
+                {msg.media && !msg.deleted && (() => {
+                  const t = msg.messageType || inferTypeFromKey(msg.media);
+                  if (t === MESSAGE_TYPES.VIDEO) return " 📹 User sent a video";
+                  if (t === MESSAGE_TYPES.VOICE) return " 🎤 Voice message";
+                  if (t === MESSAGE_TYPES.IMAGE) return " 📷 Photo";
+                  return "";
+                })()}
+              </span>
               {msg.media && !msg.deleted && (() => {
                 const url = buildMediaUrl(msg.media);
                 const t = msg.messageType || inferTypeFromKey(msg.media);
                 if (t === MESSAGE_TYPES.IMAGE) return <img src={url} alt="media" className="max-w-[200px] sm:max-w-xs rounded mt-2 cursor-pointer hover:opacity-90 transition" onClick={() => setPreviewImage(url)} />;
-                if (t === MESSAGE_TYPES.VIDEO) return <video src={url} className="max-w-[200px] sm:max-w-xs rounded mt-2" controls preload="metadata" />;
+                if (t === MESSAGE_TYPES.VIDEO) return <VideoMessagePlayer src={url} />;
                 if (t === MESSAGE_TYPES.VOICE) return <AudioMessagePlayer src={url} duration={msg.duration} />;
                 return <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 underline break-all mt-2">{msg.media}</a>;
               })()}
@@ -442,14 +452,14 @@ export default function ChatWindow({ currentUser, selectedChat }) {
           onChange={handleInputChange}
           placeholder="Type a message..."
           className="flex-1 px-2 sm:px-3 py-2 border rounded text-sm sm:text-base"
-          disabled={isRecording || (mediaFile && mediaFile.type?.startsWith("audio/"))} // Disabled if recording or audio ready
+          disabled={isRecording} // Only disabled when actively recording
         />
         <div className="flex gap-2">
           <input
             type="file"
             onChange={handleFileChange}
             className="hidden"
-            disabled={isRecording || (mediaFile && mediaFile.type?.startsWith("audio/"))}
+            disabled={isRecording}
             id="file-input"
           />
           <label
