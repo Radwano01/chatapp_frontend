@@ -101,7 +101,7 @@ export default function FriendsPage() {
             });
             const details = res.data;
 
-            // Look for existing data (friends list or search result)
+            // Look for existing data (friends list or search result) - this has the avatar
             const baseUser =
                 allFriendsToShow.find(f => f.id === userId) ||
                 searchResult ||
@@ -112,11 +112,12 @@ export default function FriendsPage() {
                 ...details,
                 fullName: details.fullName || details.username || "No Name",
                 description: details.description || "No description",
-                avatar: details.avatar ? (details.avatar.startsWith("http") ? details.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${details.avatar}`) : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
+                // Don't override avatar from details since it's not provided
+                // Keep the avatar from baseUser (friends data)
             };
 
+            console.log("Debug - baseUser.avatar:", baseUser.avatar);
             console.log("Debug - details.avatar:", details.avatar);
-            console.log("Debug - normalizedDetails.avatar:", normalizedDetails.avatar);
 
             // Merge details with base user (keep relationStatus, senderId, etc.)
             const finalDetailUser = {
@@ -127,7 +128,8 @@ export default function FriendsPage() {
                 fullName: normalizedDetails.fullName || baseUser.fullName || baseUser.username || "No Name",
                 description: normalizedDetails.description || baseUser.description || "No description",
                 userStatus: normalizedDetails.status || baseUser.userStatus || "OFFLINE",
-                avatar: normalizedDetails.avatar, // Use the properly constructed avatar from normalizedDetails
+                // Use avatar from baseUser (friends data) since details API doesn't provide it
+                avatar: baseUser.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
             };
 
             console.log("Debug - finalDetailUser.avatar:", finalDetailUser.avatar);
