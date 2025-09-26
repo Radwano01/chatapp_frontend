@@ -141,6 +141,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
       ...chat,
       otherUserId: chat.otherUserId || chat.id,
       fullName: chat.fullName || chat.username || "Unknown User",
+      username: chat.username || chat.fullName || "unknown", // Ensure username is set
       description: chat.description || "No description",
       avatar: chat.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
       relationStatus: chat.relationStatus || "NONE",

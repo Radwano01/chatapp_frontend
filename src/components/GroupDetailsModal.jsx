@@ -23,6 +23,7 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
       ...member,
       otherUserId: member.id,
       fullName: member.fullName || member.username || "Unknown User",
+      username: member.username || member.fullName || "unknown", // Ensure username is set
       description: member.description || "No description",
       avatar: member.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
       relationStatus: "ACCEPTED", // Assume group members are accepted

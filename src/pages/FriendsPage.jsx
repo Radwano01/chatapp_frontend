@@ -113,6 +113,7 @@ export default function FriendsPage() {
             const normalizedDetails = {
                 ...details,
                 fullName: details.fullName || details.username || "No Name",
+                username: details.username || details.fullName || "unknown", // Ensure username is set
                 description: details.description || "No description",
                 // Don't override avatar from details since it's not provided
                 // Keep the avatar from baseUser (friends data)

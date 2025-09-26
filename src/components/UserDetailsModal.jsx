@@ -20,7 +20,7 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
       // Ensure avatar is properly set
       avatar: user.avatar || user.image || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
       fullName: user.fullName || user.username || "Unknown User",
-      username: user.username || "unknown",
+      username: user.username || user.fullName || "unknown",
     });
   }, [user, currentUser]);
 
