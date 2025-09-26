@@ -5,7 +5,7 @@ export default function ImagePreviewModal({ imageUrl, alt, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75" onClick={onClose}>
-      <div className="relative max-w-[90vw] max-h-[90vh] p-4">
+      <div className="relative max-w-[95vw] max-h-[95vh] p-4">
         {/* Close button */}
         <button
           onClick={onClose}
@@ -14,11 +14,12 @@ export default function ImagePreviewModal({ imageUrl, alt, onClose }) {
           ✕
         </button>
         
-        {/* Image */}
+        {/* Image with specific max dimensions */}
         <img
           src={imageUrl}
           alt={alt || "Preview"}
-          className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+          className="max-w-[90vw] max-h-[90vh] w-auto h-auto object-contain rounded-lg shadow-2xl"
+          style={{ maxWidth: '1200px', maxHeight: '800px' }}
           onClick={(e) => e.stopPropagation()}
         />
       </div>

@@ -390,7 +390,11 @@ export default function ChatWindow({ currentUser, selectedChat }) {
             <div className={`p-2 rounded ${msg.deleted ? "bg-gray-200 text-gray-600" : (msg.senderId === currentUser.id ? "bg-blue-500 text-white" : "bg-white")}`}>
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
-                  {msg.senderAvatar && <img src={msg.senderAvatar} alt="avatar" className="w-6 h-6 rounded-full" />}
+                  <img 
+                    src={msg.senderAvatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"} 
+                    alt="avatar" 
+                    className="w-6 h-6 rounded-full" 
+                  />
                   <span className="font-semibold text-sm">{msg.senderName}</span>
                 </div>
                 {!msg.deleted && msg.senderId === currentUser.id && (

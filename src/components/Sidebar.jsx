@@ -132,43 +132,27 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
       senderId: chat.senderId,
       __raw: chat.__raw,
     };
-    console.log("Sidebar handleClickChat - selected object:", selected);
     onSelectChat(selected);
     // Navigate to the chat URL
-    console.log("Sidebar handleClickChat - navigating to:", `/chat/${chat.chatId}`);
     navigate(`/chat/${chat.chatId}`);
   };
 
-  // View details button
-  const openUserDetails = async (chat) => {
-    try {
-      const lookup = chat.otherUserId;
+  // View details button - use existing chat data instead of API call
+  const openUserDetails = (chat) => {
+    // Use existing chat data and normalize it for the modal
+    const normalizedUser = {
+      ...chat,
+      otherUserId: chat.otherUserId || chat.id,
+      fullName: chat.fullName || chat.username || "Unknown User",
+      description: chat.description || "No description",
+      avatar: chat.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+      relationStatus: chat.relationStatus || "NONE",
+      senderId: chat.senderId || null,
+      isSender: chat.senderId === currentUser?.id,
+      status: chat.status || "OFFLINE",
+    };
 
-      // Fetch user details including relationShipStatus
-      const res = await api.get(`/users/${lookup}/details`);
-
-      const userDetails = res.data;
-
-      // Normalize user details to ensure all required fields are present
-      const normalizedDetails = {
-        ...userDetails,
-        fullName: userDetails.fullName || userDetails.username || "Unknown User",
-        description: userDetails.description || "No description",
-        avatar: userDetails.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
-      };
-
-      setSelectedUser({
-        ...chat,                     // keep chat-specific fields
-        ...normalizedDetails,         // merge normalized fullName, description, status, relationShipStatus
-        otherUserId: chat.otherUserId, // ensure otherUserId is kept
-        relationStatus: normalizedDetails.relationStatus || "NONE", // normalize field
-        // Determine if the CURRENT user is the sender of the friend request
-        isSender: Boolean(normalizedDetails?.senderId) && normalizedDetails.senderId === currentUser?.id,
-      });
-    } catch (err) {
-      console.error("Failed to fetch user details:", err);
-      alert("Failed to load user details ❌");
-    }
+    setSelectedUser(normalizedUser);
   };
 
 
