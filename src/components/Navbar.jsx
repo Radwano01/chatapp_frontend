@@ -46,7 +46,12 @@ export default function Navbar({ currentUser }) {
   if (!currentUser) {
     return (
       <div className="bg-white shadow p-4 flex justify-between items-center h-16">
-        <span className="font-bold text-xl">ChatApp</span>
+        <div
+          onClick={() => navigate("/")}
+          className="font-bold text-xl text-blue-600 cursor-pointer hover:text-blue-700 transition-colors"
+        >
+          ChatApp
+        </div>
         <button
           onClick={() => navigate("/login")}
           className="bg-blue-600 text-white px-3 py-1"
@@ -78,7 +83,12 @@ export default function Navbar({ currentUser }) {
     <div className="bg-white shadow flex justify-between items-center h-16 px-2 sm:px-4 relative">
       {/* Left: Navigation links with vertical dividers */}
       <div className="flex h-full">
-        <NavLink label="ChatApp" path="/" />
+        <div
+          onClick={() => navigate("/")}
+          className="flex items-center justify-center px-2 sm:px-6 h-full cursor-pointer transition-colors text-sm sm:text-base font-bold text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+        >
+          ChatApp
+        </div>
         <div className="border-l border-gray-300 h-full hidden sm:block"></div>
         <NavLink label="Friends" path="/friends" />
         <div className="border-l border-gray-300 h-full hidden sm:block"></div>
