@@ -280,7 +280,6 @@ export default function ChatWindow({ currentUser, selectedChat }) {
         messageType = t;
       } catch (err) {
         const status = err?.response?.status;
-        const message = err?.response?.data || err?.message || "Upload failed";
         alert(`Upload failed${status ? ` (${status})` : ""}`);
         setIsUploading(false);
         return;
