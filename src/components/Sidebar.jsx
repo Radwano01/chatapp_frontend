@@ -134,23 +134,49 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
     navigate(`/chat/${chat.chatId}`);
   };
 
-  // View details button - use existing chat data instead of API call
-  const openUserDetails = (chat) => {
-    // Use existing chat data and normalize it for the modal
-    const normalizedUser = {
-      ...chat,
-      otherUserId: chat.otherUserId || chat.id,
-      fullName: chat.fullName || chat.username || "Unknown User",
-      username: chat.username || chat.fullName || "unknown", // Ensure username is set
-      description: chat.description || "No description",
-      avatar: chat.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
-      relationStatus: chat.relationStatus || "NONE",
-      senderId: chat.senderId || null,
-      isSender: chat.senderId === currentUser?.id,
-      status: chat.status || "OFFLINE",
-    };
+  // View details button - fetch fresh user data from API
+  const openUserDetails = async (chat) => {
+    try {
+      const userId = chat.otherUserId || chat.id;
+      const res = await api.get(`/users/${userId}/details`, {
+        headers: { Authorization: `Bearer ${currentUser?.token}` },
+      });
+      const details = res.data;
 
-    setSelectedUser(normalizedUser);
+      // Normalize the fresh data
+      const normalizedUser = {
+        ...chat,
+        ...details,
+        otherUserId: userId,
+        fullName: details.fullName || details.username || chat.fullName || chat.username || "Unknown User",
+        username: details.username || details.fullName || chat.username || chat.fullName || "unknown",
+        description: details.description || chat.description || "No description",
+        avatar: chat.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+        relationStatus: details.relationStatus || "NONE",
+        senderId: details.senderId || null,
+        isSender: details.senderId === currentUser?.id,
+        status: details.status || chat.status || "OFFLINE",
+      };
+
+      console.log("Debug - Sidebar openUserDetails - fresh data:", normalizedUser);
+      setSelectedUser(normalizedUser);
+    } catch (err) {
+      console.error("Failed to fetch user details:", err);
+      // Fallback to existing chat data if API fails
+      const normalizedUser = {
+        ...chat,
+        otherUserId: chat.otherUserId || chat.id,
+        fullName: chat.fullName || chat.username || "Unknown User",
+        username: chat.username || chat.fullName || "unknown",
+        description: chat.description || "No description",
+        avatar: chat.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+        relationStatus: chat.relationStatus || "NONE",
+        senderId: chat.senderId || null,
+        isSender: chat.senderId === currentUser?.id,
+        status: chat.status || "OFFLINE",
+      };
+      setSelectedUser(normalizedUser);
+    }
   };
 
 
