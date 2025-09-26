@@ -77,31 +77,26 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
       const res = await api.post(`/chatrooms/users/${localUser.otherUserId}`, null, {
         headers: { Authorization: `Bearer ${currentUser?.token}` },
       });
-      const chatroom = res.data;
+      const chatId = res.data; // API now returns only chatId
 
       if (typeof onSelectChat === "function") {
         onSelectChat({
-          id: chatroom.id,
-          chatId: chatroom.chatId,
-          members: chatroom.members || [currentUser.id, localUser.id],
-          username: chatroom.username || localUser.username,
-          fullName: chatroom.fullName || localUser.fullName,
-          avatar: chatroom.avatar || localUser.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
-          description: chatroom.description || localUser.description,
-          status: chatroom.status || localUser.status,
-          relationStatus: chatroom.relationStatus || localUser.relationStatus,
-          senderId: chatroom.senderId || localUser.senderId,
-          uniqueKey: `DIRECT_${chatroom.chatId}`,
+          id: localUser.otherUserId,
+          chatId: chatId,
+          members: [currentUser.id, localUser.otherUserId],
+          username: localUser.username,
+          fullName: localUser.fullName,
+          avatar: localUser.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+          description: localUser.description,
+          status: localUser.status,
+          relationStatus: localUser.relationStatus,
+          senderId: localUser.senderId,
+          uniqueKey: `DIRECT_${chatId}`,
         });
       }
 
-      // Ensure chatId exists before navigating
-      if (chatroom.chatId) {
-        navigate(`/chat/${chatroom.chatId}`);
-      } else {
-        alert("Unable to start chat. Please try again.");
-        return;
-      }
+      // Navigate to chat with the returned chatId
+      navigate(`/chat/${chatId}`);
       onClose();
     } catch (err) {
       alert("Unable to start chat. Please try again.");
@@ -195,14 +190,14 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
           <img
             src={
               localUser.avatar 
-                ? (localUser.avatar.startsWith('http') ? localUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${localUser.avatar}`)
+                ? (localUser.avatar.startsWith('http') ? localUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${localUser.avatar}`)
                 : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
             }
             alt={localUser.fullName}
             className="w-12 h-12 rounded-full cursor-pointer hover:opacity-80 transition"
             onClick={() => {
               const imageUrl = localUser.avatar 
-                ? (localUser.avatar.startsWith('http') ? localUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${localUser.avatar}`)
+                ? (localUser.avatar.startsWith('http') ? localUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${localUser.avatar}`)
                 : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg";
               setPreviewImage(imageUrl);
             }}

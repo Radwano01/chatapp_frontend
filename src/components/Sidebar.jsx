@@ -24,7 +24,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
         otherUserId: c.otherUserId,
         fullName: c.fullName,
         avatar: c.avatar 
-          ? (c.avatar.startsWith('http') ? c.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${c.avatar}`)
+          ? (c.avatar.startsWith('http') ? c.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${c.avatar}`)
           : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
         description: c.description,
         status: c.status,
@@ -124,7 +124,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
       otherUserId: chat.otherUserId,
       fullName: chat.fullName,
       avatar: chat.avatar 
-        ? (chat.avatar.startsWith('http') ? chat.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${chat.avatar}`)
+        ? (chat.avatar.startsWith('http') ? chat.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${chat.avatar}`)
         : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
       description: chat.description,
       status: chat.status,
@@ -309,7 +309,7 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
         ) : (
           (Array.isArray(groups) ? groups : []).map((g) => {
             const groupAvatar = g.avatar 
-              ? (g.avatar.startsWith('http') ? g.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${g.avatar}`)
+              ? (g.avatar.startsWith('http') ? g.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/${g.avatar}`)
               : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-group.png";
             
             return (
