@@ -322,11 +322,15 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
                   onClick={() => {
                     onSelectChat({
                       id: g.id,
+                      chatId: g.chatId || g.id, // Use chatId if available, fallback to id
                       name: g.name,
                       avatar: groupAvatar,
                       description: g.description,
                       members: g.members || [],
+                      isGroup: true, // Mark as group chat
                     });
+                    // Navigate to group chat
+                    navigate(`/chat/${g.chatId || g.id}`);
                   }}
                 >
                   <img

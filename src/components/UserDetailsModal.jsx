@@ -113,14 +113,27 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
 
     const status = localUser.relationStatus;
 
+    // Always show Start Chat button
+    const startChatButton = (
+      <button
+        onClick={handleStartChat}
+        className="bg-blue-500 text-white px-3 py-1 rounded"
+      >
+        Start Chat
+      </button>
+    );
+
     if (status === "NONE") {
       return (
-        <button
-          onClick={handleAddFriend}
-          className="bg-green-500 text-white px-3 py-1 rounded"
-        >
-          Add Friend
-        </button>
+        <div className="flex flex-col gap-2 items-start">
+          {startChatButton}
+          <button
+            onClick={handleAddFriend}
+            className="bg-green-500 text-white px-3 py-1 rounded"
+          >
+            Add Friend
+          </button>
+        </div>
       );
     }
 
@@ -129,12 +142,7 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
         return (
           <div className="flex flex-col gap-2 items-start">
             <span className="text-gray-500">Friend Request Sent</span>
-            <button
-              onClick={handleStartChat}
-              className="bg-blue-500 text-white px-3 py-1 rounded"
-            >
-              Start Chat
-            </button>
+            {startChatButton}
           </div>
         );
       } else {
@@ -154,12 +162,7 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
                 Decline
               </button>
             </div>
-            <button
-              onClick={handleStartChat}
-              className="bg-blue-500 text-white px-3 py-1 rounded"
-            >
-              Start Chat
-            </button>
+            {startChatButton}
           </div>
         );
       }
@@ -168,12 +171,7 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
     if (status === "ACCEPTED") {
       return (
         <div className="flex gap-2">
-          <button
-            onClick={handleStartChat}
-            className="bg-blue-500 text-white px-3 py-1 rounded"
-          >
-            Start Chat
-          </button>
+          {startChatButton}
           <button
             onClick={handleRemoveFriend}
             className="bg-red-500 text-white px-3 py-1 rounded"
@@ -184,7 +182,8 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
       );
     }
 
-    return null;
+    // Default case - just show Start Chat button
+    return startChatButton;
   };
 
   if (!localUser) return null;

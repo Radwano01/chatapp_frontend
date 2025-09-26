@@ -119,9 +119,12 @@ export default function FriendsPage() {
             setDetailUser({
                 ...baseUser,
                 ...normalizedDetails,
+                id: userId, // Ensure ID is set
+                otherUserId: userId, // Set otherUserId for consistency
                 fullName: normalizedDetails.fullName || baseUser.fullName || baseUser.username || "No Name",
                 description: normalizedDetails.description || baseUser.description || "No description",
                 userStatus: normalizedDetails.status || baseUser.userStatus || "OFFLINE",
+                avatar: normalizedDetails.avatar || baseUser.avatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
             });
         } catch (err) {
             // Handle error silently
@@ -337,8 +340,11 @@ export default function FriendsPage() {
                               ? (detailUser.avatar.startsWith('http') ? detailUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${detailUser.avatar}`)
                               : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                           } 
-                          alt={detailUser.username} 
-                          className="w-24 h-24 rounded-full mx-auto mb-4" 
+                          alt={detailUser.fullName || detailUser.username || "User"} 
+                          className="w-24 h-24 rounded-full mx-auto mb-4 object-cover" 
+                          onError={(e) => {
+                            e.target.src = "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg";
+                          }}
                         />
                         <p><strong>Status:</strong> {detailUser.userStatus || "OFFLINE"}</p>
                         <p className="mb-4"><strong>Description:</strong> {detailUser.description || "No description"}</p>
