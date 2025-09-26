@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { uploadToBackend, MESSAGE_TYPES, deleteFromS3 } from "../services/upload";
+import AvatarCropper from "../components/AvatarCropper";
 
 export default function EditUser() {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ export default function EditUser() {
   const [originalUser, setOriginalUser] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [showCropper, setShowCropper] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
 
   // Load current user details from backend
   useEffect(() => {
@@ -56,7 +59,23 @@ export default function EditUser() {
   };
 
   const handleFileChange = (e) => {
-    setUser({ ...user, image: e.target.files[0] });
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImageFile(file);
+      setShowCropper(true);
+    }
+  };
+
+  const handleCrop = (croppedBlob) => {
+    const croppedFile = new File([croppedBlob], 'avatar.png', { type: 'image/png' });
+    setUser({ ...user, image: croppedFile });
+    setShowCropper(false);
+    setSelectedImageFile(null);
+  };
+
+  const handleCancelCrop = () => {
+    setShowCropper(false);
+    setSelectedImageFile(null);
   };
 
   const handleSubmit = async (e) => {
@@ -251,6 +270,15 @@ export default function EditUser() {
           </div>
         </form>
       </div>
+
+      {/* Avatar Cropper Modal */}
+      {showCropper && selectedImageFile && (
+        <AvatarCropper
+          imageFile={selectedImageFile}
+          onCrop={handleCrop}
+          onCancel={handleCancelCrop}
+        />
+      )}
     </div>
   );
 }

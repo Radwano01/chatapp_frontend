@@ -402,7 +402,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
                   <img 
                     src={msg.senderAvatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"} 
                     alt="avatar" 
-                    className="w-4 h-4 sm:w-6 sm:h-6 rounded-full cursor-pointer hover:opacity-80 transition" 
+                    className="w-4 h-4 sm:w-6 sm:h-6 rounded-full object-cover cursor-pointer hover:opacity-80 transition" 
                     onClick={(e) => {
                       e.stopPropagation();
                       setPreviewImage(msg.senderAvatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg");

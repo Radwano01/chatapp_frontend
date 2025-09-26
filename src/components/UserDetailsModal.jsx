@@ -194,7 +194,7 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
                 : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
             }
             alt={localUser.fullName}
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full cursor-pointer hover:opacity-80 transition"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover cursor-pointer hover:opacity-80 transition"
             onClick={() => {
               const imageUrl = localUser.avatar 
                 ? (localUser.avatar.startsWith('http') ? localUser.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${localUser.avatar}`)

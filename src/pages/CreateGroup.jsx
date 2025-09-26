@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../services/api";
 import { uploadToBackend, MESSAGE_TYPES } from "../services/upload";
+import AvatarCropper from "../components/AvatarCropper";
 
 export default function CreateGroup() {
   const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
@@ -15,6 +16,20 @@ export default function CreateGroup() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [showCropper, setShowCropper] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
+
+  const handleCrop = (croppedBlob) => {
+    const croppedFile = new File([croppedBlob], 'group-avatar.png', { type: 'image/png' });
+    setImage(croppedFile);
+    setShowCropper(false);
+    setSelectedImageFile(null);
+  };
+
+  const handleCancelCrop = () => {
+    setShowCropper(false);
+    setSelectedImageFile(null);
+  };
 
   const handleCreateGroup = async (e) => {
     e.preventDefault();
@@ -103,7 +118,13 @@ export default function CreateGroup() {
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  setSelectedImageFile(file);
+                  setShowCropper(true);
+                }
+              }}
               className="w-full px-3 py-2 border rounded mb-2"
               disabled={isUploading || isCreating}
             />
@@ -147,6 +168,15 @@ export default function CreateGroup() {
           </button>
         </form>
       </div>
+
+      {/* Avatar Cropper Modal */}
+      {showCropper && selectedImageFile && (
+        <AvatarCropper
+          imageFile={selectedImageFile}
+          onCrop={handleCrop}
+          onCancel={handleCancelCrop}
+        />
+      )}
     </div>
   );
 }
