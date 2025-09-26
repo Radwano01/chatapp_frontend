@@ -85,7 +85,7 @@ export default function ChatPage() {
 
       <div className="flex-1 flex flex-col">
         <Navbar currentUser={currentUser} />
-        <div className="flex-1 bg-gray-100 overflow-y-auto mt-16">
+        <div className="flex-1 bg-gray-100 overflow-y-auto">
           {selectedChat ? (
             <ChatWindow
               key={selectedChat.chatId}
