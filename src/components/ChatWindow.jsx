@@ -43,12 +43,6 @@ export default function ChatWindow({ currentUser, selectedChat }) {
     return MESSAGE_TYPES.FILE;
   };
 
-  const formatTime = (secs) => {
-    if (!Number.isFinite(secs)) return "0:00";
-    const m = Math.floor(secs / 60);
-    const s = Math.floor(secs % 60).toString().padStart(2, "0");
-    return `${m}:${s}`;
-  };
 
 
   useEffect(() => {
