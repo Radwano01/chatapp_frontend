@@ -13,10 +13,14 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
     if (!user) return;
     setLocalUser({
       ...user,
-      otherUserId: user.otherUserId,
+      otherUserId: user.otherUserId || user.id,
       relationStatus: user.relationStatus || "NONE",
       senderId: user.senderId || null,
       isSender: user.senderId === currentUser?.id,
+      // Ensure avatar is properly set
+      avatar: user.avatar || user.image || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg",
+      fullName: user.fullName || user.username || "Unknown User",
+      username: user.username || "unknown",
     });
   }, [user, currentUser]);
 
@@ -32,7 +36,7 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
         isSender: true,
       }));
     } catch (err) {
-      console.error("Add friend failed:", err);
+      // Handle error silently
     }
   };
 
@@ -48,7 +52,7 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
         isSender: false,
       }));
     } catch (err) {
-      console.error("Remove friend failed:", err);
+      // Handle error silently
     }
   };
 
@@ -64,7 +68,7 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
         senderId: prev.senderId,
       }));
     } catch (err) {
-      console.error("Change status failed:", err);
+      // Handle error silently
     }
   };
 
@@ -74,8 +78,6 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
         headers: { Authorization: `Bearer ${currentUser?.token}` },
       });
       const chatroom = res.data;
-      console.log("UserDetailsModal - Backend response:", res.data);
-      console.log("UserDetailsModal - chatroom.chatId:", chatroom.chatId);
 
       if (typeof onSelectChat === "function") {
         onSelectChat({
@@ -93,10 +95,15 @@ export default function UserDetailsModal({ user, currentUser, onClose, onSelectC
         });
       }
 
-      navigate(`/chat/${chatroom.chatId}`);
+      // Ensure chatId exists before navigating
+      if (chatroom.chatId) {
+        navigate(`/chat/${chatroom.chatId}`);
+      } else {
+        alert("Unable to start chat. Please try again.");
+        return;
+      }
       onClose();
     } catch (err) {
-      console.error("Start chat failed:", err);
       alert("Unable to start chat. Please try again.");
     }
   };
