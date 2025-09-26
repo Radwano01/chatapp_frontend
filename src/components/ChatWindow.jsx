@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { getStompClient, sendChatMessage, sendGroupMessage, subscribeToChat, connectToChat, disconnectFromChat } from "../services/socket";
 import { uploadToBackend, MESSAGE_TYPES } from "../services/upload";
 import api from "../services/api";
+import ImagePreviewModal from "./ImagePreviewModal";
 
 export default function ChatWindow({ currentUser, selectedChat }) {
   const [messages, setMessages] = useState([]);
@@ -13,6 +14,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
   const mediaRecorderRef = useRef(null);
   const recordedChunksRef = useRef([]);
   const [typingUsers, setTypingUsers] = useState([]);
+  const [previewImage, setPreviewImage] = useState(null);
   const messagesEndRef = useRef(null);
   const typingTimeout = useRef(null);
   const S3_BASE_URL = "https://chat-app-radwan.s3.us-east-1.amazonaws.com/";
@@ -400,7 +402,11 @@ export default function ChatWindow({ currentUser, selectedChat }) {
                   <img 
                     src={msg.senderAvatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"} 
                     alt="avatar" 
-                    className="w-4 h-4 sm:w-6 sm:h-6 rounded-full" 
+                    className="w-4 h-4 sm:w-6 sm:h-6 rounded-full cursor-pointer hover:opacity-80 transition" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPreviewImage(msg.senderAvatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg");
+                    }}
                   />
                   <span className="font-semibold text-xs sm:text-sm">{msg.senderName}</span>
                 </div>
@@ -482,6 +488,15 @@ export default function ChatWindow({ currentUser, selectedChat }) {
           <button type="submit" className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded text-xs sm:text-sm">Send</button>
         </div>
       </form>
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <ImagePreviewModal
+          imageUrl={previewImage}
+          alt="Avatar Preview"
+          onClose={() => setPreviewImage(null)}
+        />
+      )}
     </div>
   );
 }
