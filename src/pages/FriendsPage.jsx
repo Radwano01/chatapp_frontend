@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 export default function FriendsPage() {
-    
     const [friends, setFriends] = useState([]);
     const [pending, setPending] = useState([]);
     const [search, setSearch] = useState("");
