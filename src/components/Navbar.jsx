@@ -110,7 +110,7 @@ export default function Navbar({ currentUser }) {
                   : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
               }
               alt="profile"
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full cursor-pointer hover:opacity-80 transition"
+              className="w-6 h-6 sm:w-8 sm:h-8 rounded-full cursor-pointer hover:opacity-80 transition"
               onClick={(e) => {
                 e.stopPropagation();
                 const imageUrl = currentUser?.image || currentUser?.avatar
@@ -144,7 +144,7 @@ export default function Navbar({ currentUser }) {
                     : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                 }
                 alt="profile"
-                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full mx-auto mb-2"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mx-auto mb-2"
               />
               <span
                 className={`absolute bottom-1 right-1 block w-3 h-3 rounded-full border-2 border-white ${

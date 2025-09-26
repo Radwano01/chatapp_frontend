@@ -323,7 +323,7 @@ export default function FriendsPage() {
                                   : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                               } 
                               alt={friend.fullName} 
-                              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full cursor-pointer hover:opacity-80 transition" 
+                              className="w-6 h-6 sm:w-8 sm:h-8 rounded-full cursor-pointer hover:opacity-80 transition" 
                               onClick={(e) => {
                                 e.stopPropagation();
                                 const imageUrl = friend.avatar 
@@ -359,7 +359,7 @@ export default function FriendsPage() {
                               : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                           } 
                           alt={detailUser.fullName || detailUser.username || "User"} 
-                          className="w-24 h-24 rounded-full mx-auto mb-4 object-cover cursor-pointer hover:opacity-80 transition" 
+                          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto mb-4 object-cover cursor-pointer hover:opacity-80 transition" 
                           onClick={(e) => {
                             e.stopPropagation();
                             const imageUrl = detailUser.avatar 

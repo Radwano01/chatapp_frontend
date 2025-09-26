@@ -400,7 +400,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
                   <img 
                     src={msg.senderAvatar || "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"} 
                     alt="avatar" 
-                    className="w-4 h-4 sm:w-6 sm:h-6 rounded-full" 
+                    className="w-4 h-4 sm:w-5 sm:h-5 rounded-full" 
                   />
                   <span className="font-semibold text-xs sm:text-sm">{msg.senderName}</span>
                 </div>
