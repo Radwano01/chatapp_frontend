@@ -332,7 +332,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
               <span className={`text-xs sm:text-sm ${msg.deleted ? "italic text-gray-500" : ""}`}>
                 {msg.deleted ? "This message was deleted" : msg.content}
                 {msg.media && !msg.deleted && (() => {
-                  const t = msg.messageType || inferTypeFromKey(msg.media);
+                  const t = msg.type || msg.messageType || inferTypeFromKey(msg.media);
                   if (t === MESSAGE_TYPES.VIDEO) return " 📹 User sent a video";
                   if (t === MESSAGE_TYPES.AUDIO) return " 🎤 Voice message";
                   if (t === MESSAGE_TYPES.IMAGE) return " 📷 Photo";
@@ -341,7 +341,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
               </span>
               {msg.media && !msg.deleted && (() => {
                 const url = buildMediaUrl(msg.media);
-                const t = msg.messageType || inferTypeFromKey(msg.media);
+                const t = msg.type || msg.messageType || inferTypeFromKey(msg.media);
                 if (t === MESSAGE_TYPES.IMAGE) return <img src={url} alt="media" className="max-w-[200px] sm:max-w-xs rounded mt-2 cursor-pointer hover:opacity-90 transition" onClick={() => setPreviewImage(url)} />;
                 if (t === MESSAGE_TYPES.VIDEO) return <VideoMessagePlayer src={url} />;
                 if (t === MESSAGE_TYPES.AUDIO) return <AudioMessagePlayer src={url} duration={msg.duration} />;
