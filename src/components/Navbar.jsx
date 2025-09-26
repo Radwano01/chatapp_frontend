@@ -68,10 +68,11 @@ export default function Navbar({ currentUser }) {
       <div
         onClick={() => !disabled && navigate(path)}
         className={`
-          flex items-center justify-center px-2 sm:px-6 h-full cursor-pointer transition-colors text-sm sm:text-base
+          flex items-center justify-center px-2 sm:px-6 py-2 sm:py-0 h-12 sm:h-full cursor-pointer transition-colors text-sm sm:text-base
           ${disabled ? "text-gray-400" : ""}
           ${!disabled ? "hover:bg-blue-600 hover:text-white" : ""}
           ${isActive ? "bg-blue-600 text-white font-bold" : "text-gray-700"}
+          border-b sm:border-b-0 border-gray-200 sm:border-none
         `}
       >
         {label}
@@ -80,12 +81,12 @@ export default function Navbar({ currentUser }) {
   };
 
   return (
-    <div className="bg-white shadow flex justify-between items-center h-16 px-2 sm:px-4 relative w-full fixed top-0 left-0 right-0 z-50">
-      {/* Left: Navigation links with vertical dividers */}
-      <div className="flex h-full">
+    <div className="bg-white shadow flex flex-col sm:flex-row justify-between items-center h-auto sm:h-16 px-2 sm:px-4 relative w-full fixed top-0 left-0 right-0 z-50">
+      {/* Top: Navigation links - Mobile: Stack vertically, Desktop: Horizontal */}
+      <div className="flex flex-col sm:flex-row w-full sm:w-auto h-full">
         <div
           onClick={() => navigate("/")}
-          className="flex items-center justify-center px-2 sm:px-6 h-full cursor-pointer transition-colors text-sm sm:text-base font-bold text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+          className="flex items-center justify-center px-2 sm:px-6 py-2 sm:py-0 h-12 sm:h-full cursor-pointer transition-colors text-sm sm:text-base font-bold text-blue-600 hover:bg-blue-50 hover:text-blue-700 border-b sm:border-b-0 border-gray-200 sm:border-none"
         >
           ChatApp
         </div>
@@ -95,10 +96,10 @@ export default function Navbar({ currentUser }) {
       </div>
 
       {/* Right: Profile dropdown */}
-      <div className="relative" ref={profileRef}>
+      <div className="relative w-full sm:w-auto border-t sm:border-t-0 border-gray-200 sm:border-none" ref={profileRef}>
         <button
           onClick={() => setShowProfile(!showProfile)}
-          className="flex items-center space-x-2 focus:outline-none relative h-full"
+          className="flex items-center justify-center sm:justify-start space-x-2 focus:outline-none relative h-12 sm:h-full w-full sm:w-auto py-2 sm:py-0"
         >
           <div className="relative">
             <img
@@ -110,7 +111,7 @@ export default function Navbar({ currentUser }) {
                   : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
               }
               alt="profile"
-              className="w-6 h-6 sm:w-8 sm:h-8 rounded-full cursor-pointer hover:opacity-80 transition"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full cursor-pointer hover:opacity-80 transition"
               onClick={(e) => {
                 e.stopPropagation();
                 const imageUrl = currentUser?.image || currentUser?.avatar
@@ -144,7 +145,7 @@ export default function Navbar({ currentUser }) {
                     : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                 }
                 alt="profile"
-                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mx-auto mb-2"
+                className="w-12 h-12 sm:w-16 sm:h-16 rounded-full mx-auto mb-2"
               />
               <span
                 className={`absolute bottom-1 right-1 block w-3 h-3 rounded-full border-2 border-white ${

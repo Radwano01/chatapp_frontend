@@ -122,7 +122,7 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
                   : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-group.png"
               }
               alt={group.name || "Group"}
-              className="w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2 sm:mr-3 object-cover cursor-pointer hover:opacity-80 transition"
+              className="w-8 h-8 sm:w-12 sm:h-12 rounded-full mr-2 sm:mr-3 object-cover cursor-pointer hover:opacity-80 transition"
               onClick={() => {
                 const imageUrl = group.avatar || group.image 
                   ? (group.avatar || group.image).startsWith('http') 
@@ -187,7 +187,7 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
                         : "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-blue.jpg"
                     }
                     alt={member.fullName}
-                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full mr-2 cursor-pointer hover:opacity-80 transition"
+                    className="w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2 cursor-pointer hover:opacity-80 transition"
                     onClick={() => {
                       const imageUrl = member.avatar 
                         ? (member.avatar.startsWith('http') ? member.avatar : `https://chat-app-radwan.s3.us-east-1.amazonaws.com/${member.avatar}`)
