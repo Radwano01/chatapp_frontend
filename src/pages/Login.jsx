@@ -32,7 +32,6 @@ export default function Login() {
       // Redirect to users page
       navigate("/users");
     } catch (err) {
-      console.error("Login failed", err);
       const status = err?.response?.status;
       if (status === 401) {
         setError("Invalid username or password. Please try again.");

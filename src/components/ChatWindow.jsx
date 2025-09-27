@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { getStompClient, sendChatMessage, sendGroupMessage, subscribeToChat, connectToChat, disconnectFromChat } from "../services/socket";
-import { uploadToBackend, MESSAGE_TYPES, formatFileSize, MAX_FILE_SIZE } from "../services/upload";
+import { uploadToBackend, MESSAGE_TYPES, formatFileSize, MAX_FILE_SIZE, MAX_MEDIA_SIZE } from "../services/upload";
 import api from "../services/api";
 import ImagePreviewModal from "./ImagePreviewModal";
 import AudioMessagePlayer from "./AudioMessagePlayer";
@@ -13,8 +13,10 @@ export default function ChatWindow({ currentUser, selectedChat }) {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [recordingSize, setRecordingSize] = useState(0);
   const mediaRecorderRef = useRef(null);
   const recordedChunksRef = useRef([]);
+  const recordingSizeRef = useRef(0);
   const [typingUsers, setTypingUsers] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
   const messagesEndRef = useRef(null);
@@ -28,7 +30,16 @@ export default function ChatWindow({ currentUser, selectedChat }) {
   };
 
   const validateFileSize = (file) => {
-    if (file.size > MAX_FILE_SIZE) {
+    // Check if it's a media file (image, video, audio)
+    const fileType = file.type || "";
+    const isMediaFile = fileType.startsWith("image/") || fileType.startsWith("video/") || fileType.startsWith("audio/");
+    
+    if (isMediaFile && file.size > MAX_MEDIA_SIZE) {
+      const maxSizeFormatted = formatFileSize(MAX_MEDIA_SIZE);
+      const fileSizeFormatted = formatFileSize(file.size);
+      alert(`Media file too large! Maximum size for media files is ${maxSizeFormatted}. Your file is ${fileSizeFormatted}. Please compress your media or choose a smaller file.`);
+      return false;
+    } else if (!isMediaFile && file.size > MAX_FILE_SIZE) {
       const maxSizeFormatted = formatFileSize(MAX_FILE_SIZE);
       const fileSizeFormatted = formatFileSize(file.size);
       alert(`File too large! Maximum size allowed is ${maxSizeFormatted}. Your file is ${fileSizeFormatted}.`);
@@ -253,7 +264,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
       }
 
       setNewMessage("");
-      setMediaFile(null); // Clear audio after sending
+      setMediaFile(null); // Clear media file after sending
       setUploadProgress(0);
     } catch (err) {
     }
@@ -311,32 +322,56 @@ export default function ChatWindow({ currentUser, selectedChat }) {
       }
       
       const mediaRecorder = new MediaRecorder(stream, { mimeType });
-      recordedChunksRef.current = [];
+      resetRecordingState();
       
       mediaRecorder.ondataavailable = (evt) => {
-        if (evt.data && evt.data.size > 0) recordedChunksRef.current.push(evt.data);
+        if (evt.data && evt.data.size > 0) {
+          recordedChunksRef.current.push(evt.data);
+          recordingSizeRef.current += evt.data.size;
+          setRecordingSize(recordingSizeRef.current);
+          
+          // Check if we've reached the 50MB limit
+          if (recordingSizeRef.current > MAX_MEDIA_SIZE) {
+            mediaRecorder.stop();
+            stream.getTracks().forEach(track => track.stop());
+            
+            // Show error message
+            alert(`Recording stopped! Maximum size for audio recordings is ${formatFileSize(MAX_MEDIA_SIZE)}. Your recording reached ${formatFileSize(recordingSizeRef.current)}.`);
+            
+            // Clear the recording
+            resetRecordingState();
+            setIsRecording(false);
+            return;
+          }
+        }
       };
       
       mediaRecorder.onstop = async () => {
-        const blob = new Blob(recordedChunksRef.current, { type: mimeType });
-        const fileExtension = mimeType.split('/')[1];
-        const file = new File([blob], `voice_${Date.now()}.${fileExtension}`, { type: mimeType });
-        
-        // Validate recorded audio file size
-        if (!validateFileSize(file)) {
-          setIsRecording(false);
-          return;
+        // Only process if we have valid chunks and didn't hit the size limit
+        if (recordedChunksRef.current.length > 0 && recordingSizeRef.current <= MAX_MEDIA_SIZE) {
+          const blob = new Blob(recordedChunksRef.current, { type: mimeType });
+          const fileExtension = mimeType.split('/')[1];
+          const file = new File([blob], `voice_${Date.now()}.${fileExtension}`, { type: mimeType });
+          
+          // Validate recorded audio file size (audio is a media file, so 50MB limit applies)
+          if (!validateFileSize(file)) {
+            setIsRecording(false);
+            return;
+          }
+          
+          setMediaFile(file);
         }
         
-        setMediaFile(file);
+        // Stop all tracks
+        stream.getTracks().forEach(track => track.stop());
         setIsRecording(false);
+        resetRecordingState();
       };
       
-      mediaRecorder.start();
+      mediaRecorder.start(1000); // Collect data every second for size monitoring
       mediaRecorderRef.current = mediaRecorder;
       setIsRecording(true);
     } catch (err) {
-      console.error("Recording error:", err);
       alert("Microphone permission is required");
     }
   };
@@ -347,6 +382,12 @@ export default function ChatWindow({ currentUser, selectedChat }) {
       rec.stop();
       mediaRecorderRef.current = null;
     }
+  };
+
+  const resetRecordingState = () => {
+    setRecordingSize(0);
+    recordingSizeRef.current = 0;
+    recordedChunksRef.current = [];
   };
 
   const handleDelete = (messageId) => {
@@ -431,12 +472,16 @@ export default function ChatWindow({ currentUser, selectedChat }) {
             type="file"
             onChange={handleFileChange}
             className="hidden"
-            disabled={isRecording || mediaFile}
+            disabled={isRecording || mediaFile || isUploading}
             id="file-input"
           />
           <label
             htmlFor="file-input"
-            className="px-2 sm:px-3 py-2 bg-gray-200 rounded text-xs sm:text-sm cursor-pointer hover:bg-gray-300"
+            className={`px-2 sm:px-3 py-2 rounded text-xs sm:text-sm ${
+              isRecording || mediaFile || isUploading
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-gray-200 cursor-pointer hover:bg-gray-300'
+            }`}
           >
             📎
           </label>
@@ -447,45 +492,109 @@ export default function ChatWindow({ currentUser, selectedChat }) {
               </div>
             </div>
           )}
+          {isRecording && (
+            <div className="flex items-center text-xs sm:text-sm text-gray-600 w-20 sm:w-28">
+              <div className="w-full bg-gray-200 rounded h-2">
+                <div 
+                  className={`h-2 rounded ${
+                    recordingSize > MAX_MEDIA_SIZE * 0.8 
+                      ? 'bg-red-500' 
+                      : recordingSize > MAX_MEDIA_SIZE * 0.6 
+                        ? 'bg-yellow-500' 
+                        : 'bg-green-500'
+                  }`} 
+                  style={{ width: `${Math.min((recordingSize / MAX_MEDIA_SIZE) * 100, 100)}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
           <button
             type="button"
             onClick={isRecording ? stopRecording : startRecording}
-            className={`px-2 sm:px-3 py-2 rounded text-xs sm:text-sm ${isRecording ? "bg-red-600 text-white" : "bg-gray-200"}`}
-            title={isRecording ? "Stop Recording" : "Record Voice"}
+            disabled={isUploading}
+            className={`px-2 sm:px-3 py-2 rounded text-xs sm:text-sm ${
+              isUploading 
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : isRecording 
+                  ? "bg-red-600 text-white" 
+                  : "bg-gray-200 hover:bg-gray-300"
+            }`}
+            title={
+              isUploading 
+                ? "Cannot record while uploading" 
+                : isRecording 
+                  ? `Stop Recording (${formatFileSize(recordingSize)})` 
+                  : "Record Voice"
+            }
           >
-            {isRecording ? "Stop" : "Rec"}
+            {isRecording ? `Stop (${formatFileSize(recordingSize)})` : "Rec"}
           </button>
           {mediaFile && mediaFile.type?.startsWith("audio/") && (
             <div className="flex items-center gap-2 text-xs text-gray-700">
-              <span className="px-2 py-1 bg-gray-200 rounded">
-                Audio ready ({formatFileSize(mediaFile.size)})
+              <span className={`px-2 py-1 rounded ${
+                mediaFile.size > MAX_MEDIA_SIZE 
+                  ? 'bg-red-200 text-red-800' 
+                  : isUploading
+                    ? 'bg-yellow-200 text-yellow-800'
+                    : 'bg-green-200 text-green-800'
+              }`}>
+                {isUploading ? 'Uploading audio...' : 'Audio ready'} ({formatFileSize(mediaFile.size)})
+                {mediaFile.size > MAX_MEDIA_SIZE && ' - Too large!'}
               </span>
-              <button
-                type="button"
-                onClick={() => setMediaFile(null)}
-                className="px-2 py-1 rounded bg-gray-300 hover:bg-gray-400 text-xs"
-                title="Delete recorded audio"
-              >
-                ✕
-              </button>
+              {!isUploading && (
+                <button
+                  type="button"
+                  onClick={() => setMediaFile(null)}
+                  className="px-2 py-1 rounded bg-gray-300 hover:bg-gray-400 text-xs"
+                  title="Delete recorded audio"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           )}
           {mediaFile && !mediaFile.type?.startsWith("audio/") && (
             <div className="flex items-center gap-2 text-xs text-gray-700">
-              <span className="px-2 py-1 bg-gray-200 rounded">
-                File ready ({formatFileSize(mediaFile.size)})
+              <span className={`px-2 py-1 rounded ${
+                (mediaFile.type?.startsWith("image/") || mediaFile.type?.startsWith("video/")) && mediaFile.size > MAX_MEDIA_SIZE
+                  ? 'bg-red-200 text-red-800' 
+                  : isUploading
+                    ? 'bg-yellow-200 text-yellow-800'
+                    : 'bg-green-200 text-green-800'
+              }`}>
+                {isUploading ? 'Uploading file...' : 'File ready'} ({formatFileSize(mediaFile.size)})
+                {(mediaFile.type?.startsWith("image/") || mediaFile.type?.startsWith("video/")) && mediaFile.size > MAX_MEDIA_SIZE && ' - Too large!'}
               </span>
-              <button
-                type="button"
-                onClick={() => setMediaFile(null)}
-                className="px-2 py-1 rounded bg-gray-300 hover:bg-gray-400 text-xs"
-                title="Remove file"
-              >
-                ✕
-              </button>
+              {!isUploading && (
+                <button
+                  type="button"
+                  onClick={() => setMediaFile(null)}
+                  className="px-2 py-1 rounded bg-gray-300 hover:bg-gray-400 text-xs"
+                  title="Remove file"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           )}
-          <button type="submit" className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded text-xs sm:text-sm">Send</button>
+          <button 
+            type="submit" 
+            disabled={isUploading}
+            className={`px-3 sm:px-4 py-2 rounded text-xs sm:text-sm ${
+              isUploading
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
+            title={
+              isUploading 
+                ? 'Uploading media...' 
+                : mediaFile 
+                  ? 'Click to send with media' 
+                  : 'Send message'
+            }
+          >
+            {isUploading ? 'Uploading...' : 'Send'}
+          </button>
         </div>
       </form>
 

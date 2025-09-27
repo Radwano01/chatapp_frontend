@@ -21,7 +21,6 @@ export default function VideoMessagePlayer({ src, onError }) {
     };
 
     const handleError = (e) => {
-      console.error('Video failed to load:', e);
       setIsLoading(false);
       setHasError(true);
       if (onError) onError(e);

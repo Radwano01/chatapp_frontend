@@ -11,6 +11,9 @@ export const MESSAGE_TYPES = {
 // Maximum file size: 5GB (S3 PutObject limit)
 export const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB in bytes
 
+// Maximum media file size: 50MB (for better performance and user experience)
+export const MAX_MEDIA_SIZE = 50 * 1024 * 1024; // 50MB in bytes
+
 /**
  * Format file size in bytes to human readable format
  * @param {number} bytes - File size in bytes
@@ -57,12 +60,17 @@ export function inferBackendUploadType(file) {
 export async function uploadToBackend(file, explicitType, onProgress) {
   if (!file) throw new Error("uploadToBackend: file is required");
   
-  // Validate file size before upload
-  if (file.size > MAX_FILE_SIZE) {
-    throw new Error(`File too large. Maximum size allowed is ${formatFileSize(MAX_FILE_SIZE)}. Your file is ${formatFileSize(file.size)}.`);
-  }
-  
   const type = explicitType || inferBackendUploadType(file);
+  
+  // Check if it's a media file (image, video, audio)
+  const isMediaFile = type === MESSAGE_TYPES.IMAGE || type === MESSAGE_TYPES.VIDEO || type === MESSAGE_TYPES.AUDIO;
+  
+  // Validate file size based on file type
+  if (isMediaFile && file.size > MAX_MEDIA_SIZE) {
+    throw new Error(`Media file too large! Maximum size for media files is ${formatFileSize(MAX_MEDIA_SIZE)}. Your file is ${formatFileSize(file.size)}. Please compress your media or choose a smaller file.`);
+  } else if (!isMediaFile && file.size > MAX_FILE_SIZE) {
+    throw new Error(`File too large! Maximum size allowed is ${formatFileSize(MAX_FILE_SIZE)}. Your file is ${formatFileSize(file.size)}.`);
+  }
 
   const formData = new FormData();
   formData.append("file", file);
@@ -72,26 +80,12 @@ export async function uploadToBackend(file, explicitType, onProgress) {
     const user = JSON.parse(sessionStorage.getItem("currentUser")) || {};
     const token = user.token;
     
-    // Debug authentication
-    console.log("Upload debug:", {
-      hasUser: !!user,
-      hasToken: !!token,
-      tokenLength: token?.length,
-      userKeys: Object.keys(user),
-      apiBaseURL: api.defaults.baseURL,
-      uploadType: type,
-      fileName: file.name,
-      fileSize: file.size
-    });
-    
-    if (!token) {
-      throw new Error("No authentication token found. Please log in again.");
-    }
     
     response = await api.post(`/s3/upload`, formData, {
       params: { type },
-      // Let Axios set Content-Type with boundary automatically
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      headers: token ? { 
+        Authorization: `Bearer ${token}`
+      } : {},
       onUploadProgress: (evt) => {
         if (!onProgress || !evt.total) return;
         const pct = Math.round((evt.loaded * 100) / evt.total);
@@ -99,10 +93,6 @@ export async function uploadToBackend(file, explicitType, onProgress) {
       },
     });
   } catch (err) {
-    const status = err?.response?.status;
-    const data = err?.response?.data;
-    console.error("Upload error", status, data);
-    console.error("Full error:", err);
     throw err;
   }
 
@@ -119,7 +109,6 @@ export async function uploadToBackend(file, explicitType, onProgress) {
  */
 export async function deleteFromS3(filename) {
   if (!filename) {
-    console.warn("deleteFromS3: filename is required");
     return false;
   }
 
@@ -144,7 +133,6 @@ export async function deleteFromS3(filename) {
     
     return true;
   } catch (err) {
-    console.error("S3 delete error:", err?.response?.status, err?.response?.data);
     // Don't throw error, just log it - deletion failure shouldn't break the flow
     return false;
   }

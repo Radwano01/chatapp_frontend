@@ -6,7 +6,7 @@ export const ENV_CONFIG = {
   API_URL: process.env.REACT_APP_API_URL || 'https://unhelpfully-ethnolinguistic-emelda.ngrok-free.dev',
   
   // API path prefix
-  API_PATH: process.env.REACT_APP_API_PATH || '/api',
+  API_PATH: process.env.REACT_APP_API_PATH || '/api/v1',
   
   // WebSocket path
   WS_PATH: process.env.REACT_APP_WS_PATH || '/ws',
