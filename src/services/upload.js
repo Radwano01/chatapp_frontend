@@ -71,6 +71,23 @@ export async function uploadToBackend(file, explicitType, onProgress) {
   try {
     const user = JSON.parse(sessionStorage.getItem("currentUser")) || {};
     const token = user.token;
+    
+    // Debug authentication
+    console.log("Upload debug:", {
+      hasUser: !!user,
+      hasToken: !!token,
+      tokenLength: token?.length,
+      userKeys: Object.keys(user),
+      apiBaseURL: api.defaults.baseURL,
+      uploadType: type,
+      fileName: file.name,
+      fileSize: file.size
+    });
+    
+    if (!token) {
+      throw new Error("No authentication token found. Please log in again.");
+    }
+    
     response = await api.post(`/s3/upload`, formData, {
       params: { type },
       // Let Axios set Content-Type with boundary automatically
@@ -85,6 +102,7 @@ export async function uploadToBackend(file, explicitType, onProgress) {
     const status = err?.response?.status;
     const data = err?.response?.data;
     console.error("Upload error", status, data);
+    console.error("Full error:", err);
     throw err;
   }
 
