@@ -28,6 +28,13 @@ export default function ChatPage() {
     }
   }, [location.state]);
 
+  // Clear selected chat when navigating to home route (no chatId in URL)
+  useEffect(() => {
+    if (!chatId && location.pathname === "/") {
+      setSelectedChat(null);
+    }
+  }, [chatId, location.pathname]);
+
   // Handle chatId from URL parameter
   useEffect(() => {
     if (chatId && chatRooms.length > 0) {

@@ -47,7 +47,7 @@ export default function Navbar({ currentUser }) {
     return (
       <div className="bg-white shadow p-4 flex justify-between items-center h-16">
         <div
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/", { replace: true })}
           className="font-bold text-xl text-blue-600 cursor-pointer hover:text-blue-700 transition-colors"
         >
           ChatApp
@@ -84,7 +84,7 @@ export default function Navbar({ currentUser }) {
       {/* Left: Navigation links with vertical dividers */}
       <div className="flex h-full">
         <div
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/", { replace: true })}
           className="flex items-center justify-center px-2 sm:px-6 h-full cursor-pointer transition-colors text-sm sm:text-base font-bold text-blue-600 hover:bg-blue-50 hover:text-blue-700"
         >
           ChatApp
