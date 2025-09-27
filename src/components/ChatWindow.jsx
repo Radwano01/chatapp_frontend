@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { getStompClient, sendChatMessage, sendGroupMessage, subscribeToChat, connectToChat, disconnectFromChat } from "../services/socket";
-import { uploadToBackend, MESSAGE_TYPES } from "../services/upload";
+import { uploadToBackend, MESSAGE_TYPES, formatFileSize, MAX_FILE_SIZE } from "../services/upload";
 import api from "../services/api";
 import ImagePreviewModal from "./ImagePreviewModal";
 import AudioMessagePlayer from "./AudioMessagePlayer";
@@ -27,6 +27,16 @@ export default function ChatWindow({ currentUser, selectedChat }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const validateFileSize = (file) => {
+    if (file.size > MAX_FILE_SIZE) {
+      const maxSizeFormatted = formatFileSize(MAX_FILE_SIZE);
+      const fileSizeFormatted = formatFileSize(file.size);
+      alert(`File too large! Maximum size allowed is ${maxSizeFormatted}. Your file is ${fileSizeFormatted}.`);
+      return false;
+    }
+    return true;
+  };
+
   const buildMediaUrl = (key) => {
     if (!key) return null;
     const trimmed = key.startsWith("/") ? key.slice(1) : key;
@@ -38,7 +48,7 @@ export default function ChatWindow({ currentUser, selectedChat }) {
     if (!key) return null;
     const lower = key.toLowerCase();
     if (lower.startsWith("images/") || /\.(png|jpe?g|gif|webp|svg)$/.test(lower)) return MESSAGE_TYPES.IMAGE;
-    if (lower.startsWith("videos/") || /\.(mp4|webm|ogg|mov)$/.test(lower)) return MESSAGE_TYPES.VIDEO;
+    if (lower.startsWith("videos/") || /\.(mp4|mov)$/.test(lower)) return MESSAGE_TYPES.VIDEO;
     if (lower.startsWith("audio/") || /\.(mp3|wav|ogg|m4a|webm)$/.test(lower)) return MESSAGE_TYPES.AUDIO;
     return MESSAGE_TYPES.FILE;
   };
@@ -192,11 +202,20 @@ export default function ChatWindow({ currentUser, selectedChat }) {
       try {
         setIsUploading(true);
         setUploadProgress(0);
+        // Force audio type for recorded audio files to prevent video classification
+        const explicitType = mediaFile.type?.startsWith("audio/") ? MESSAGE_TYPES.AUDIO : undefined;
+        console.log("Uploading file:", {
+          name: mediaFile.name,
+          type: mediaFile.type,
+          size: mediaFile.size,
+          explicitType
+        });
         const { filename, messageType: t } = await uploadToBackend(
           mediaFile,
-          undefined,
+          explicitType,
           (p) => setUploadProgress(p)
         );
+        console.log("Upload result:", { filename, messageType: t });
         uploadedFilename = filename;
         messageType = t;
       } catch (err) {
@@ -257,27 +276,64 @@ export default function ChatWindow({ currentUser, selectedChat }) {
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
+    // Validate file size before setting
+    if (!validateFileSize(file)) {
+      // Reset the file input
+      e.target.value = '';
+      return;
+    }
+    
     setMediaFile(file);
   };
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100
+        } 
+      });
+      
+      // Check for supported MIME types and prefer audio-specific ones
+      let mimeType = "audio/webm";
+      if (MediaRecorder.isTypeSupported("audio/ogg")) {
+        mimeType = "audio/ogg";
+      } else if (MediaRecorder.isTypeSupported("audio/mp4")) {
+        mimeType = "audio/mp4";
+      } else if (MediaRecorder.isTypeSupported("audio/wav")) {
+        mimeType = "audio/wav";
+      }
+      
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       recordedChunksRef.current = [];
+      
       mediaRecorder.ondataavailable = (evt) => {
         if (evt.data && evt.data.size > 0) recordedChunksRef.current.push(evt.data);
       };
+      
       mediaRecorder.onstop = async () => {
-        const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
-        const file = new File([blob], `voice_${Date.now()}.webm`, { type: "audio/webm" });
+        const blob = new Blob(recordedChunksRef.current, { type: mimeType });
+        const fileExtension = mimeType.split('/')[1];
+        const file = new File([blob], `voice_${Date.now()}.${fileExtension}`, { type: mimeType });
+        
+        // Validate recorded audio file size
+        if (!validateFileSize(file)) {
+          setIsRecording(false);
+          return;
+        }
+        
         setMediaFile(file);
         setIsRecording(false);
       };
+      
       mediaRecorder.start();
       mediaRecorderRef.current = mediaRecorder;
       setIsRecording(true);
     } catch (err) {
+      console.error("Recording error:", err);
       alert("Microphone permission is required");
     }
   };
@@ -398,12 +454,29 @@ export default function ChatWindow({ currentUser, selectedChat }) {
           </button>
           {mediaFile && mediaFile.type?.startsWith("audio/") && (
             <div className="flex items-center gap-2 text-xs text-gray-700">
-              <span className="px-2 py-1 bg-gray-200 rounded">Audio ready</span>
+              <span className="px-2 py-1 bg-gray-200 rounded">
+                Audio ready ({formatFileSize(mediaFile.size)})
+              </span>
               <button
                 type="button"
                 onClick={() => setMediaFile(null)}
                 className="px-2 py-1 rounded bg-gray-300 hover:bg-gray-400 text-xs"
                 title="Delete recorded audio"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+          {mediaFile && !mediaFile.type?.startsWith("audio/") && (
+            <div className="flex items-center gap-2 text-xs text-gray-700">
+              <span className="px-2 py-1 bg-gray-200 rounded">
+                File ready ({formatFileSize(mediaFile.size)})
+              </span>
+              <button
+                type="button"
+                onClick={() => setMediaFile(null)}
+                className="px-2 py-1 rounded bg-gray-300 hover:bg-gray-400 text-xs"
+                title="Remove file"
               >
                 ✕
               </button>
