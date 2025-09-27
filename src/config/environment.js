@@ -3,7 +3,7 @@
 
 export const ENV_CONFIG = {
   // Backend API URL (without trailing slash)
-  API_URL: process.env.REACT_APP_API_URL || 'https://unhelpfully-ethnolinguistic-emelda.ngrok-free.dev',
+  API_URL: process.env.REACT_APP_API_URL || 'http://localhost:8080',
   
   // API path prefix
   API_PATH: process.env.REACT_APP_API_PATH || '/api/v1',
