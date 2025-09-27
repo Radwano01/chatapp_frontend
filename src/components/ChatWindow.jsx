@@ -37,6 +37,16 @@ export default function ChatWindow({ currentUser, selectedChat }) {
     return true;
   };
 
+  const getMessageType = (msg) => {
+    // Prioritize backend type field over frontend inference
+    const backendType = msg.type || msg.messageType;
+    if (backendType) {
+      return backendType;
+    }
+    // Fallback to frontend inference only if backend type is not available
+    return inferTypeFromKey(msg.media);
+  };
+
   const buildMediaUrl = (key) => {
     if (!key) return null;
     const trimmed = key.startsWith("/") ? key.slice(1) : key;
@@ -204,18 +214,11 @@ export default function ChatWindow({ currentUser, selectedChat }) {
         setUploadProgress(0);
         // Force audio type for recorded audio files to prevent video classification
         const explicitType = mediaFile.type?.startsWith("audio/") ? MESSAGE_TYPES.AUDIO : undefined;
-        console.log("Uploading file:", {
-          name: mediaFile.name,
-          type: mediaFile.type,
-          size: mediaFile.size,
-          explicitType
-        });
         const { filename, messageType: t } = await uploadToBackend(
           mediaFile,
           explicitType,
           (p) => setUploadProgress(p)
         );
-        console.log("Upload result:", { filename, messageType: t });
         uploadedFilename = filename;
         messageType = t;
       } catch (err) {
@@ -388,19 +391,19 @@ export default function ChatWindow({ currentUser, selectedChat }) {
               <span className={`text-xs sm:text-sm ${msg.deleted ? "italic text-gray-500" : ""}`}>
                 {msg.deleted ? "This message was deleted" : msg.content}
                 {msg.media && !msg.deleted && (() => {
-                  const t = msg.type || msg.messageType || inferTypeFromKey(msg.media);
-                  if (t === MESSAGE_TYPES.VIDEO) return " 📹 User sent a video";
-                  if (t === MESSAGE_TYPES.AUDIO) return " 🎤 Voice message";
-                  if (t === MESSAGE_TYPES.IMAGE) return " 📷 Photo";
+                  const t = getMessageType(msg);
+                  if (t === MESSAGE_TYPES.VIDEO || t === "VIDEO") return " 📹 User sent a video";
+                  if (t === MESSAGE_TYPES.AUDIO || t === "AUDIO") return " 🎤 Voice message";
+                  if (t === MESSAGE_TYPES.IMAGE || t === "IMAGE") return " 📷 Photo";
                   return "";
                 })()}
               </span>
               {msg.media && !msg.deleted && (() => {
                 const url = buildMediaUrl(msg.media);
-                const t = msg.type || msg.messageType || inferTypeFromKey(msg.media);
-                if (t === MESSAGE_TYPES.IMAGE) return <img src={url} alt="media" className="max-w-[200px] sm:max-w-xs rounded mt-2 cursor-pointer hover:opacity-90 transition" onClick={() => setPreviewImage(url)} />;
-                if (t === MESSAGE_TYPES.VIDEO) return <VideoMessagePlayer src={url} />;
-                if (t === MESSAGE_TYPES.AUDIO) return <AudioMessagePlayer src={url} duration={msg.duration} />;
+                const t = getMessageType(msg);
+                if (t === MESSAGE_TYPES.IMAGE || t === "IMAGE") return <img src={url} alt="media" className="max-w-[200px] sm:max-w-xs rounded mt-2 cursor-pointer hover:opacity-90 transition" onClick={() => setPreviewImage(url)} />;
+                if (t === MESSAGE_TYPES.VIDEO || t === "VIDEO") return <VideoMessagePlayer src={url} />;
+                if (t === MESSAGE_TYPES.AUDIO || t === "AUDIO") return <AudioMessagePlayer src={url} duration={msg.duration} />;
                 return <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 underline break-all mt-2">{msg.media}</a>;
               })()}
             </div>
