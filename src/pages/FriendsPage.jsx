@@ -90,8 +90,18 @@ export default function FriendsPage() {
             setSearchResult(normalizedData);
             setLastSearch(query);
         } catch (err) {
-            setSearchResult(null);
-            setLastSearch("");
+            console.error("User search error:", err);
+            const status = err?.response?.status;
+            if (status === 404 || status === 401) {
+                // User not found - this is expected, don't show error
+                setSearchResult(null);
+                setLastSearch("");
+            } else {
+                // Other errors - show message
+                alert("Failed to search for user. Please try again.");
+                setSearchResult(null);
+                setLastSearch("");
+            }
         }
     };
 

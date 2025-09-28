@@ -433,18 +433,18 @@ export default function ChatWindow({ currentUser, selectedChat }) {
                 {msg.deleted ? "This message was deleted" : msg.content}
                 {msg.media && !msg.deleted && (() => {
                   const t = getMessageType(msg);
-                  if (t === MESSAGE_TYPES.VIDEO || t === "VIDEO") return " 📹 User sent a video";
-                  if (t === MESSAGE_TYPES.AUDIO || t === "AUDIO") return " 🎤 Voice message";
-                  if (t === MESSAGE_TYPES.IMAGE || t === "IMAGE") return " 📷 Photo";
+                  if (t === MESSAGE_TYPES.VIDEO) return " 📹 User sent a video";
+                  if (t === MESSAGE_TYPES.AUDIO) return " 🎤 Voice message";
+                  if (t === MESSAGE_TYPES.IMAGE) return " 📷 Photo";
                   return "";
                 })()}
               </span>
               {msg.media && !msg.deleted && (() => {
                 const url = buildMediaUrl(msg.media);
                 const t = getMessageType(msg);
-                if (t === MESSAGE_TYPES.IMAGE || t === "IMAGE") return <img src={url} alt="media" className="max-w-[200px] sm:max-w-xs rounded mt-2 cursor-pointer hover:opacity-90 transition" onClick={() => setPreviewImage(url)} />;
-                if (t === MESSAGE_TYPES.VIDEO || t === "VIDEO") return <VideoMessagePlayer src={url} />;
-                if (t === MESSAGE_TYPES.AUDIO || t === "AUDIO") return <AudioMessagePlayer src={url} duration={msg.duration} />;
+                if (t === MESSAGE_TYPES.IMAGE) return <img src={url} alt="media" className="max-w-[200px] sm:max-w-xs rounded mt-2 cursor-pointer hover:opacity-90 transition" onClick={() => setPreviewImage(url)} />;
+                if (t === MESSAGE_TYPES.VIDEO) return <VideoMessagePlayer src={url} />;
+                if (t === MESSAGE_TYPES.AUDIO) return <AudioMessagePlayer src={url} duration={msg.duration} />;
                 return <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 underline break-all mt-2">{msg.media}</a>;
               })()}
             </div>

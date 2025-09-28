@@ -55,7 +55,14 @@ export default function AddGroupMembersPage() {
       setFoundUser(normalizedUser);
     } catch (err) {
       console.error(err);
-      alert("User not found ❌");
+      const status = err?.response?.status;
+      if (status === 404) {
+        alert("User not found. Please check the username and try again.");
+      } else if (status === 401) {
+        alert("User not found. Please check the username and try again.");
+      } else {
+        alert("Failed to search for user. Please try again.");
+      }
       setFoundUser(null);
     } finally {
       setLoading(false);
