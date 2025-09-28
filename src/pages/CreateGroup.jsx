@@ -48,7 +48,6 @@ export default function CreateGroup() {
         );
         uploadedAvatarUrl = filename;
       } catch (err) {
-        console.error("Image upload failed:", err);
         alert("Failed to upload image. Please try again.");
         setIsUploading(false);
         return;
@@ -76,7 +75,6 @@ export default function CreateGroup() {
 
       navigate("/");
     } catch (err) {
-      console.error("Failed to create group:", err);
       alert("Failed to create group. Please try again.");
     } finally {
       setIsCreating(false);

@@ -47,7 +47,7 @@ export default function EditUser() {
         };
         sessionStorage.setItem("currentUser", JSON.stringify(updatedUserData));
       } catch (err) {
-        console.error("Failed to fetch details:", err);
+        // Handle error silently
       }
     };
 
@@ -97,7 +97,6 @@ export default function EditUser() {
         );
         uploadedImageUrl = filename;
       } catch (err) {
-        console.error("Image upload failed:", err);
         alert("Failed to upload image. Please try again.");
         setIsUploading(false);
         return;
@@ -148,7 +147,6 @@ export default function EditUser() {
 
       navigate("/chat");
     } catch (err) {
-      console.error("Failed to update user:", err);
       alert("Failed to update profile. Please try again.");
     }
   };

@@ -35,7 +35,6 @@ export default function EditGroupPage() {
         setOriginalData(data);
         setGroupData(data);
       } catch (err) {
-        console.error(err);
         alert("Failed to load group details ❌");
       }
     };
@@ -79,7 +78,6 @@ export default function EditGroupPage() {
         );
         uploadedAvatarUrl = filename;
       } catch (err) {
-        console.error("Avatar upload failed:", err);
         alert("Failed to upload avatar. Please try again.");
         setIsUploading(false);
         return;
@@ -102,7 +100,6 @@ export default function EditGroupPage() {
       alert("Group updated successfully ✅");
       navigate(-1);
     } catch (err) {
-      console.error(err);
       alert("Failed to update group ❌");
     } finally {
       setLoading(false);

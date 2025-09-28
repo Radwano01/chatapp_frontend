@@ -26,7 +26,7 @@ const fetchUsers = async () => {
     });
     setUsers(res.data);
   } catch (err) {
-    console.error("Failed to fetch users:", err);
+    // Handle error silently
   }
 };
 

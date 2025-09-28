@@ -24,7 +24,6 @@ export const logoutUser = async () => {
     }
   } catch (error) {
     // Silently handle errors - logout should proceed even if API call fails
-    console.error("Logout API call failed:", error);
   } finally {
     // Always clean up local state
     disconnectSocket();
@@ -53,7 +52,7 @@ export const setupAutoLogout = () => {
           new Blob([logoutData], { type: 'application/json' })
         );
       } catch (error) {
-        console.error("SendBeacon logout failed:", error);
+        // Silently handle sendBeacon errors
       }
       
       // Also clean up local state

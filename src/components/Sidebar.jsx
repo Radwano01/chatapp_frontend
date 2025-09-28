@@ -160,7 +160,6 @@ export default function Sidebar({ currentUser, chatRooms = [], onSelectChat }) {
 
       setSelectedUser(normalizedUser);
     } catch (err) {
-      console.error("Failed to fetch user details:", err);
       // Fallback to existing chat data if API fails
       const normalizedUser = {
         ...chat,

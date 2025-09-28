@@ -42,7 +42,6 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
       
       onRefresh(updatedDetails);
     } catch (err) {
-      console.error("Error in handleRemove:", err);
       alert("Failed to remove user from group");
     }
   };
@@ -61,7 +60,6 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
         onRefresh();
       }
     } catch (err) {
-      console.error("Error leaving group:", err);
       alert("Failed to leave group");
     }
   };
@@ -78,7 +76,6 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
         createdAt: details.createdAt ?? details.timestamp ?? group.createdAt ?? group.timestamp ?? null,
       };
     } catch (err) {
-      console.error(err);
       return {
         ...group,
         description: group.description ?? "",
@@ -94,7 +91,6 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
       const updatedDetails = await fetchUpdatedDetails();
       onRefresh(updatedDetails);
     } catch (err) {
-      console.error(err);
       alert("Failed to change role ❌");
     }
   };
@@ -132,7 +128,6 @@ export default function GroupDetailsModal({ group, currentUser, onClose, onRemov
                 setPreviewImage(imageUrl);
               }}
               onError={(e) => {
-                console.error("Failed to load group image:", group.avatar || group.image);
                 e.target.src = "https://chat-app-radwan.s3.us-east-1.amazonaws.com/images/user-group.png";
               }}
             />

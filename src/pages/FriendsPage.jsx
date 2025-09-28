@@ -90,7 +90,6 @@ export default function FriendsPage() {
             setSearchResult(normalizedData);
             setLastSearch(query);
         } catch (err) {
-            console.error("User search error:", err);
             const status = err?.response?.status;
             if (status === 404 || status === 401) {
                 // User not found - this is expected, don't show error

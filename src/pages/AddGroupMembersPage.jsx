@@ -34,7 +34,7 @@ export default function AddGroupMembersPage() {
         const res = await api.get(`/groups/${numericGroupId}/details`);
         setGroupMembers(res.data.members || []);
       } catch (err) {
-        console.error(err);
+        // Handle error silently
       }
     };
     fetchGroupMembers();
@@ -54,7 +54,6 @@ export default function AddGroupMembersPage() {
       };
       setFoundUser(normalizedUser);
     } catch (err) {
-      console.error(err);
       const status = err?.response?.status;
       if (status === 404) {
         alert("User not found. Please check the username and try again.");
@@ -84,7 +83,6 @@ export default function AddGroupMembersPage() {
       alert(`${foundUser.fullName} added to the group ✅`);
       navigate(-1); // go back
     } catch (err) {
-      console.error(err);
       alert("Failed to add user ❌");
     } finally {
       setAdding(false);

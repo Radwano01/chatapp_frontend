@@ -19,7 +19,7 @@ export default function Groups() {
       });
       setGroups(res.data);
     } catch (error) {
-      console.error("Failed to fetch groups:", error);
+      // Handle error silently
     }
   };
 

@@ -95,7 +95,6 @@ export default function Register() {
       // ✅ Instead of auto-login, just redirect to login page
       navigate("/login");
     } catch (err) {
-      console.error("Registration failed:", err);
       setError(err.response?.data?.message || "Registration failed");
     }
   };
