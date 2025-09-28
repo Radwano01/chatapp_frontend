@@ -1,5 +1,6 @@
 // src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
 import Login from "./pages/Login";
 import ChatPage from "./pages/ChatPage";
 import PrivateRoute from "./components/PrivateRoute";
@@ -11,8 +12,14 @@ import ChangePassword from "./pages/ChangePassword";
 import EditGroupPage from "./pages/EditGroup";
 import FriendsPage from "./pages/FriendsPage"; // ✅ import FriendsPage
 import AddGroupMembersPage from "./pages/AddGroupMembersPage";
+import { setupAutoLogout } from "./services/logout";
 
 export default function App() {
+  // Set up automatic logout when user exits the website
+  useEffect(() => {
+    const cleanup = setupAutoLogout();
+    return cleanup;
+  }, []);
   return (
     <Router>
       <Routes>

@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import api from "../services/api";
-import { disconnectSocket } from "../services/socket";
+import { logoutUser } from "../services/logout";
 import ImagePreviewModal from "./ImagePreviewModal";
 
 export default function Navbar({ currentUser }) {
@@ -12,25 +11,7 @@ export default function Navbar({ currentUser }) {
   const location = useLocation(); // for active page highlight
 
   const handleLogout = async () => {
-    try {
-      if (currentUser?.token) {
-        await api.post(
-          `/users/logout`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${currentUser.token}`,
-            },
-          }
-        );
-      }
-    } catch (error) {
-    } finally {
-      // Disconnect socket before logout
-      disconnectSocket();
-      sessionStorage.removeItem("currentUser");
-      navigate("/login");
-    }
+    await logoutUser();
   };
 
   useEffect(() => {
