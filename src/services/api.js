@@ -45,7 +45,7 @@ api.interceptors.response.use(
                             requestUrl.includes('/users/details') ||
                             requestUrl.includes('/users/password') ||
                             requestUrl.includes('/friends') ||
-                            requestUrl.includes('/groups') && !requestUrl.includes('/users/');
+                            (requestUrl.includes('/groups') && !requestUrl.includes('/users/'));
       
       // Check if error message indicates authentication failure
       const isAuthError = errorMessage.toLowerCase().includes('token') || 
